@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#E5DFD2"/>
+  <g fill="none" stroke="#cec6b4" stroke-width="2">
+    <rect x="130" y="80" width="140" height="120" rx="4"/>
+    <path d="M130 110 h140 M165 80 v30 M235 80 v30"/>
+    <path d="M158 145 h84 M158 162 h60"/>
+  </g>
+  <text x="200" y="230" font-family="Montserrat, sans-serif" font-size="11" font-weight="600" fill="#9a9285" text-anchor="middle" letter-spacing="2">KRAFTMAN PACKAGING</text>
+</svg>

@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Kraftman Packaging</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+  /* ── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --bg:       #0f0f0d;
+    --bg-card:  #1a1a16;
+    --bg-hover: #222220;
+    --border:   rgba(229,223,210,.1);
+    --accent:   #C0392B;
+    --accent-lt:#E74C3C;
+    --cream:    #E5DFD2;
+    --text:     #E5DFD2;
+    --text-dim: rgba(229,223,210,.5);
+    --danger:   #e05555;
+    --success:  #4caf82;
+    --radius:   8px;
+    --sidebar:  240px;
+    --font-h:   'Montserrat', sans-serif;
+    --font-b:   'Source Sans 3', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  input, select, textarea, button { font-family: inherit; }
+
+  /* ── LOGIN ─────────────────────────────────────────── */
+  #loginView {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(192,57,43,.07) 0%, transparent 70%), var(--bg);
+  }
+  .login-card {
+    width: 380px; padding: 44px 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+  .login-logo .lk { width: 40px; height: 40px; background: var(--accent); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-h); font-weight: 900; font-size: .85rem; }
+  .login-logo .lt { line-height: 1; }
+  .login-logo .lt b { display: block; font-family: var(--font-h); font-size: .95rem; font-weight: 800; letter-spacing: .08em; color: var(--cream); }
+  .login-logo .lt span { font-size: .6rem; letter-spacing: .18em; color: var(--accent); font-weight: 700; }
+  .login-card h1 { font-family: var(--font-h); font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+  .login-card p { color: var(--text-dim); font-size: .875rem; margin-bottom: 28px; }
+  .fg { margin-bottom: 16px; }
+  .fg label { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .fg input { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: .9rem; outline: none; transition: border-color .2s; }
+  .fg input:focus { border-color: var(--accent); }
+  .btn-login { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-family: var(--font-h); font-size: .875rem; font-weight: 700; letter-spacing: .04em; cursor: pointer; transition: background .2s; margin-top: 4px; }
+  .btn-login:hover { background: var(--accent-lt); }
+  .login-err { display: none; color: var(--danger); font-size: .85rem; margin-top: 10px; text-align: center; }
+
+  /* ── APP SHELL ─────────────────────────────────────── */
+  #appView { display: none; min-height: 100vh; }
+  .app-layout { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ───────────────────────────────────────── */
+  .sidebar {
+    width: var(--sidebar);
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 200;
+    transition: transform .3s;
+  }
+  .sidebar-header {
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar-header .lk { width: 36px; height: 36px; background: var(--accent); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-h); font-weight: 900; font-size: .75rem; flex-shrink: 0; }
+  .sidebar-header .lt b { display: block; font-family: var(--font-h); font-size: .8rem; font-weight: 800; color: var(--cream); }
+  .sidebar-header .lt span { font-size: .55rem; letter-spacing: .15em; color: var(--accent); font-weight: 700; }
+  .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+  .nav-section-label { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); padding: 12px 8px 6px; }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: 2px;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .sidebar-link i { width: 18px; text-align: center; font-size: .9rem; }
+  .sidebar-link:hover { color: var(--text); background: var(--bg-hover); }
+  .sidebar-link.active { color: var(--accent); background: rgba(192,57,43,.1); }
+  .sidebar-link .badge { margin-left: auto; background: var(--danger); color: #fff; border-radius: 100px; padding: 2px 7px; font-size: .7rem; }
+  .sidebar-footer { padding: 12px 8px; border-top: 1px solid var(--border); }
+
+  /* ── MAIN CONTENT ──────────────────────────────────── */
+  .main-content { flex: 1; margin-left: var(--sidebar); padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    background: var(--bg-card); border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar h2 { font-family: var(--font-h); font-size: 1rem; font-weight: 700; color: var(--cream); }
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+  .topbar-user { font-size: .8rem; color: var(--text-dim); }
+  .btn-topbar { padding: 7px 14px; border-radius: var(--radius); font-size: .78rem; font-weight: 700; letter-spacing: .04em; cursor: pointer; border: none; font-family: var(--font-h); transition: all .2s; }
+  .btn-view-site { background: rgba(192,57,43,.15); color: var(--accent); }
+  .btn-view-site:hover { background: rgba(192,57,43,.25); }
+  .btn-logout { background: rgba(224,85,85,.15); color: var(--danger); }
+  .btn-logout:hover { background: rgba(224,85,85,.25); }
+
+  .page { display: none; padding: 28px 28px; }
+  .page.active { display: block; }
+
+  /* ── STATS ─────────────────────────────────────────── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .stat-card .s-val { font-family: var(--font-h); font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-card .s-lbl { font-size: .78rem; font-weight: 600; color: var(--text-dim); margin-top: 4px; letter-spacing: .04em; }
+  .stat-card .s-icon { float: right; font-size: 1.5rem; color: rgba(192,57,43,.3); }
+
+  /* ── CARDS / TABLES ────────────────────────────────── */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; overflow-x: auto; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .card-title { font-family: var(--font-h); font-size: .95rem; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 12px; border-bottom: 1px solid rgba(229,223,210,.05); font-size: .875rem; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-hover); }
+  .td-img { width: 52px; height: 42px; object-fit: cover; border-radius: 6px; background: var(--bg); }
+  .td-img-ph { width: 52px; height: 42px; background: rgba(192,57,43,.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: .8rem; }
+
+  /* ── BUTTONS ────────────────────────────────────────── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-family: var(--font-h); font-size: .78rem; font-weight: 700; letter-spacing: .04em; cursor: pointer; border: none; transition: all .2s; }
+  .btn-sm { padding: 5px 10px; font-size: .72rem; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-lt); }
+  .btn-danger { background: rgba(224,85,85,.15); color: var(--danger); }
+  .btn-danger:hover { background: rgba(224,85,85,.3); }
+  .btn-secondary { background: var(--bg-hover); color: var(--cream); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: rgba(229,223,210,.3); }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* ── STATUS BADGES ─────────────────────────────────── */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
+  .badge-new { background: rgba(76,175,130,.15); color: var(--success); }
+  .badge-read { background: rgba(192,57,43,.15); color: var(--accent); }
+  .badge-replied { background: rgba(85,150,224,.15); color: #5596e0; }
+  .badge-closed { background: rgba(229,223,210,.08); color: var(--text-dim); }
+  .badge-active { background: rgba(76,175,130,.15); color: var(--success); }
+  .badge-inactive { background: rgba(229,223,210,.08); color: var(--text-dim); }
+  .badge-status { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: .72rem; font-weight: 600; }
+  .badge-status.active { background: rgba(76,175,130,.15); color: var(--success); }
+  .badge-status.inactive { background: rgba(229,223,210,.08); color: var(--text-dim); }
+
+  /* ── MODAL ─────────────────────────────────────────── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 560px; max-width: 95vw; max-height: 88vh; overflow-y: auto; }
+  .modal h3 { font-family: var(--font-h); font-size: 1.1rem; font-weight: 700; margin-bottom: 24px; }
+  .fg2 { margin-bottom: 16px; }
+  .fg2 label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .fg2 input, .fg2 select, .fg2 textarea {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    color: var(--text); font-size: .875rem; outline: none; transition: border-color .2s;
+  }
+  .fg2 input:focus, .fg2 select:focus, .fg2 textarea:focus { border-color: var(--accent); }
+  .fg2 textarea { resize: vertical; min-height: 90px; }
+  .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px;
+    text-align: center; color: var(--text-dim); cursor: pointer; transition: all .2s;
+    margin-bottom: 10px;
+    /* KEY FIX: relative + overflow:hidden so overlay input covers the zone */
+    position: relative; overflow: hidden;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); color: var(--accent); }
+  /* Overlay file input — covers the whole zone, invisible, clickable on ALL browsers/Mac */
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    width: 100%; height: 100%; font-size: 0;
+  }
+  .upload-preview { width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius); margin-top: 10px; display: none; }
+  .upload-preview.show { display: block; }
+
+  /* ── TOAST ─────────────────────────────────────────── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+  .toast { padding: 12px 20px; border-radius: var(--radius); font-size: .875rem; font-weight: 600; min-width: 260px; opacity: 0; transform: translateX(40px); animation: toastIn .3s forwards; }
+  .toast.success { background: #1a3b2a; border: 1px solid var(--success); color: var(--success); }
+  .toast.error   { background: #3b1a1a; border: 1px solid var(--danger); color: var(--danger); }
+  @keyframes toastIn { to { opacity: 1; transform: translateX(0); } }
+
+  /* ── SETTINGS ──────────────────────────────────────── */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .settings-grid .fg2 { margin-bottom: 0; }
+  .settings-full { grid-column: 1/-1; }
+
+  /* ── RESPONSIVE ────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .topbar { padding: 0 16px; }
+    .page { padding: 20px 16px; }
+    .settings-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .fg-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── MISC ──────────────────────────────────────────── */
+  .empty-state { text-align: center; padding: 40px; color: var(--text-dim); }
+  .empty-state i { font-size: 2rem; display: block; margin-bottom: 10px; }
+  .search-bar { padding: 8px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: .85rem; outline: none; min-width: 200px; }
+  .search-bar:focus { border-color: var(--accent); }
+  .text-dim { color: var(--text-dim); }
+  .enquiry-msg { font-size: .82rem; color: var(--text-dim); max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════════ -->
+<div id="loginView">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="lk">KP</div>
+      <div class="lt"><b>KRAFTMAN</b><span>PACKAGING</span></div>
+    </div>
+    <h1>Admin Panel</h1>
+    <p>Sign in to manage your website content</p>
+    <form id="loginForm">
+      <div class="fg">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="admin" autocomplete="username" required />
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-login"><i class="fa fa-sign-in-alt"></i> Sign In</button>
+      <div class="login-err" id="loginErr"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ APP ══════════════════════════════════════════════════════════ -->
+<div id="appView">
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="lk">KP</div>
+        <div class="lt"><b>KRAFTMAN</b><span>ADMIN</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="sidebar-link active" data-page="dashboard"><i class="fa fa-th-large"></i> Dashboard</button>
+        <div class="nav-section-label">Content</div>
+        <button class="sidebar-link" data-page="products"><i class="fa fa-box-open"></i> Products</button>
+        <button class="sidebar-link" data-page="gallery"><i class="fa fa-images"></i> Gallery</button>
+        <button class="sidebar-link" data-page="clients"><i class="fa fa-handshake"></i> Client Logos</button>
+        <button class="sidebar-link" data-page="certifications"><i class="fa fa-certificate"></i> Certifications</button>
+        <button class="sidebar-link" data-page="capabilities"><i class="fa fa-cogs"></i> Capabilities</button>
+        <button class="sidebar-link" data-page="sections"><i class="fa fa-layer-group"></i> Page Sections</button>
+        <div class="nav-section-label">Leads</div>
+        <button class="sidebar-link" data-page="enquiries"><i class="fa fa-envelope"></i> Enquiries <span class="badge" id="newBadge" style="display:none">0</span></button>
+        <div class="nav-section-label">Config</div>
+        <button class="sidebar-link" data-page="settings"><i class="fa fa-cog"></i> Site Settings</button>
+        <button class="sidebar-link" data-page="upload"><i class="fa fa-cloud-upload-alt"></i> Upload Images</button>
+        <button class="sidebar-link" data-page="password"><i class="fa fa-key"></i> Change Password</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="sidebar-link" onclick="goToSite()"><i class="fa fa-external-link-alt"></i> View Website</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <div class="topbar">
+        <h2 id="pageTitle">Dashboard</h2>
+        <div class="topbar-actions">
+          <span class="topbar-user" id="topbarUser"></span>
+          <button class="btn-topbar btn-view-site" onclick="goToSite()"><i class="fa fa-external-link-alt"></i> View Site</button>
+          <button class="btn-topbar btn-logout" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><i class="fa fa-box s-icon"></i><div class="s-val" id="s-products">—</div><div class="s-lbl">Active Products</div></div>
+          <div class="stat-card"><i class="fa fa-images s-icon"></i><div class="s-val" id="s-gallery">—</div><div class="s-lbl">Gallery Items</div></div>
+          <div class="stat-card"><i class="fa fa-handshake s-icon"></i><div class="s-val" id="s-clients">—</div><div class="s-lbl">Client Logos</div></div>
+          <div class="stat-card"><i class="fa fa-certificate s-icon"></i><div class="s-val" id="s-certs">—</div><div class="s-lbl">Certifications</div></div>
+          <div class="stat-card"><i class="fa fa-envelope s-icon"></i><div class="s-val" id="s-total">—</div><div class="s-lbl">Total Enquiries</div></div>
+          <div class="stat-card"><i class="fa fa-bell s-icon"></i><div class="s-val" id="s-new">—</div><div class="s-lbl">New Enquiries</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Enquiries</div><button class="btn btn-secondary btn-sm" onclick="showPage('enquiries')">View All</button></div>
+          <table><thead><tr><th>Name</th><th>Company</th><th>Product</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody id="recentEnquiriesTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="page-products">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-box-open"></i> Products</div>
+            <button class="btn btn-primary" onclick="openProductModal()"><i class="fa fa-plus"></i> Add Product</button>
+          </div>
+          <table>
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="productsTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- GALLERY -->
+      <div class="page" id="page-gallery">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-images"></i> Gallery</div>
+            <button class="btn btn-primary" onclick="openGalleryModal()"><i class="fa fa-plus"></i> Add Image</button>
+          </div>
+          <table>
+            <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="galleryTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="page" id="page-clients">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-handshake"></i> Client Logos</div>
+            <button class="btn btn-primary" onclick="openClientModal()"><i class="fa fa-plus"></i> Add Client</button>
+          </div>
+          <p style="padding:0 0 12px;color:var(--text-dim);font-size:.85rem;">Upload client logos here. They will appear in the Clients section of the website as a branded logo grid.</p>
+          <table>
+            <thead><tr><th>Logo</th><th>Client Name</th><th>Industry</th><th>Website</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="clientsTable"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CERTIFICATIONS -->
+      <div class="page" id="page-certifications">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-certificate"></i> Certifications &amp; Nominations</div>
+            <button class="btn btn-primary" onclick="openCertModal()"><i class="fa fa-plus"></i> Add Certification</button>
+          </div>
+          <p style="padding:0 0 12px;color:var(--text-dim);font-size:.85rem;">Add certifications, awards, and nominations. They appear in the dedicated Certifications section on the website.</p>
+          <table>
+            <thead><tr><th>Image</th><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="certsTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CAPABILITIES -->
+      <div class="page" id="page-capabilities">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-cogs"></i> Capabilities</div>
+            <button class="btn btn-primary" onclick="openCapabilityModal()"><i class="fa fa-plus"></i> Add Capability</button>
+          </div>
+          <p style="padding:0 0 12px;color:var(--text-dim);font-size:.85rem;">Manage the capability cards shown in the Capabilities section. Drag to reorder via sort order field.</p>
+          <table>
+            <thead><tr><th>#</th><th>Icon</th><th>Title</th><th>Description</th><th>Image</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="capabilitiesTable"><tr><td colspan="8" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ENQUIRIES -->
+      <div class="page" id="page-enquiries">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-envelope"></i> Enquiries</div>
+            <input class="search-bar" type="search" placeholder="Search…" id="enquirySearch" oninput="filterEnquiries()" />
+          </div>
+          <table>
+            <thead><tr><th>Name</th><th>Contact</th><th>Product Interest</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="enquiriesTable"><tr><td colspan="7" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- UPLOAD -->
+      <div class="page" id="page-upload">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fa fa-cloud-upload-alt"></i> Upload Images</div></div>
+          <p style="color:var(--text-dim);margin-bottom:20px;">Upload images to use in Products or Gallery. Accepted: JPG, PNG, GIF, WEBP (max 10MB each).</p>
+          <div class="upload-zone" id="bulkUploadZone">
+            <i class="fa fa-cloud-upload-alt" style="font-size:2.5rem;margin-bottom:12px;display:block;pointer-events:none;"></i>
+            <p style="pointer-events:none;margin:0;"><strong>Click to browse</strong> or drag &amp; drop</p>
+            <p style="font-size:.8rem;margin-top:4px;pointer-events:none;opacity:.7;">Multiple files supported · JPG, PNG, GIF, WEBP (max 10MB each)</p>
+            <input type="file" id="bulkFileInput" multiple accept="image/*" onchange="handleBulkUpload(this.files)" />
+          </div>
+          <div id="uploadResults" style="margin-top:16px;"></div>
+          <div id="uploadedFilesList" style="margin-top:20px;"></div>
+        </div>
+      </div>
+
+      <!-- PAGE SECTIONS -->
+      <div class="page" id="page-sections">
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:20px;"><i class="fa fa-info-circle" style="color:var(--accent);"></i> Edit the text and images for each section below. Changes are saved immediately and reflected on the live website.</p>
+
+        <!-- Core Strengths -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-layer-group" style="color:var(--accent);"></i> Core Strengths</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Label</th><th>Title</th><th>Description</th><th></th></tr></thead>
+            <tbody id="strengthsAdminList"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Manufacturing Process -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-industry" style="color:var(--accent);"></i> Manufacturing Process</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Step</th><th>Icon</th><th>Title</th><th>Features</th><th>Image</th><th></th></tr></thead>
+            <tbody id="mfgAdminList"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- New Product Development -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-lightbulb" style="color:var(--accent);"></i> New Product Development</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Step</th><th>Icon</th><th>Title</th><th>Description</th><th></th></tr></thead>
+            <tbody id="npdAdminList"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Quality Assurance -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-shield-alt" style="color:var(--accent);"></i> Quality Assurance</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Icon</th><th>Title</th><th>Description</th><th></th></tr></thead>
+            <tbody id="qualityAdminList"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Why Choose Us -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-thumbs-up" style="color:var(--accent);"></i> Why Choose Us</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Icon</th><th>Title</th><th>Description</th><th></th></tr></thead>
+            <tbody id="whyusAdminList"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fa fa-cog"></i> Site Settings</div><button class="btn btn-primary" onclick="saveSettings()"><i class="fa fa-save"></i> Save Settings</button></div>
+          <form id="settingsForm">
+            <div class="settings-grid">
+              <div class="fg2 settings-full"><label>Site Title (SEO)</label><input type="text" name="site_title" placeholder="Kraftman Packaging…" /></div>
+              <div class="fg2 settings-full"><label>Meta Description (SEO)</label><textarea name="site_description" rows="2"></textarea></div>
+              <div class="fg2 settings-full"><label>Meta Keywords (SEO)</label><input type="text" name="meta_keywords" /></div>
+              <div class="fg2"><label>Phone 1</label><input type="text" name="phone1" /></div>
+              <div class="fg2"><label>Phone 2</label><input type="text" name="phone2" /></div>
+              <div class="fg2"><label>Phone 3</label><input type="text" name="phone3" /></div>
+              <div class="fg2"><label>Email</label><input type="email" name="email" /></div>
+              <div class="fg2 settings-full"><label>Address</label><textarea name="address" rows="2"></textarea></div>
+              <div class="fg2 settings-full"><label>Hero Tagline</label><input type="text" name="tagline" /></div>
+              <div class="fg2"><label>Hero Heading</label><input type="text" name="hero_heading" /></div>
+              <div class="fg2"><label>Hero Sub-heading</label><input type="text" name="hero_subheading" /></div>
+              <!-- BRAND LOGO -->
+              <div class="fg2 settings-full" style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
+                <div style="font-weight:700;font-size:.85rem;color:var(--text);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;">
+                  <i class="fa fa-trademark" style="color:var(--accent);margin-right:6px;"></i> Brand Logo
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-image" style="color:var(--accent);font-size:.8rem;"></i> Site Logo (appears in navbar &amp; footer)
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="siteLogoZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <p style="pointer-events:none;margin:2px 0 0;font-size:.72rem;opacity:.6;">PNG with transparent background recommended</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'site_logo','siteLogoPreview','siteLogoZone')" />
+                    </div>
+                    <img id="siteLogoPreview" class="upload-preview" src="" alt="Site logo preview" style="max-height:60px;object-fit:contain;background:#f3f4f6;padding:8px;" />
+                    <input type="hidden" name="site_logo" id="site_logo_val" />
+                    <div id="site_logoCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION BACKGROUND IMAGES -->
+              <div class="fg2 settings-full" style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
+                <div style="font-weight:700;font-size:.85rem;color:var(--text);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;">
+                  <i class="fa fa-image" style="color:var(--accent);margin-right:6px;"></i> Section Background Images
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+                  <!-- Hero BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-home" style="color:var(--accent);font-size:.8rem;"></i> Hero Section
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="heroBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'hero_bg_image','heroBgPreview','heroBgZone')" />
+                    </div>
+                    <img id="heroBgPreview" class="upload-preview" src="" alt="Hero background preview" />
+                    <input type="hidden" name="hero_bg_image" id="hero_bg_image_val" />
+                    <div id="heroBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- About BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-building" style="color:var(--accent);font-size:.8rem;"></i> About Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="aboutBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'about_bg_image','aboutBgPreview','aboutBgZone')" />
+                    </div>
+                    <img id="aboutBgPreview" class="upload-preview" src="" alt="About background preview" />
+                    <input type="hidden" name="about_bg_image" id="about_bg_image_val" />
+                    <div id="aboutBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- About Visual Image -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-industry" style="color:var(--accent);font-size:.8rem;"></i> About Visual (Facility Photo)
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="aboutVisualZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <p style="pointer-events:none;margin:2px 0 0;font-size:.72rem;opacity:.6;">Replaces the icon placeholder</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'about_visual_image','aboutVisualPreview','aboutVisualZone')" />
+                    </div>
+                    <img id="aboutVisualPreview" class="upload-preview" src="" alt="About facility preview" />
+                    <input type="hidden" name="about_visual_image" id="about_visual_image_val" />
+                    <div id="aboutVisualCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- NPD BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-lightbulb" style="color:var(--accent);font-size:.8rem;"></i> NPD Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="npdBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'npd_bg_image','npdBgPreview','npdBgZone')" />
+                    </div>
+                    <img id="npdBgPreview" class="upload-preview" src="" alt="NPD background preview" />
+                    <input type="hidden" name="npd_bg_image" id="npd_bg_image_val" />
+                    <div id="npdBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Capabilities BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-cogs" style="color:var(--accent);font-size:.8rem;"></i> Capabilities Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="capsBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'capabilities_bg_image','capsBgPreview','capsBgZone')" />
+                    </div>
+                    <img id="capsBgPreview" class="upload-preview" src="" alt="Capabilities background preview" />
+                    <input type="hidden" name="capabilities_bg_image" id="capabilities_bg_image_val" />
+                    <div id="capsBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Core Strengths BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-star" style="color:var(--accent);font-size:.8rem;"></i> Core Strengths Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="strengthsBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'strengths_bg_image','strengthsBgPreview','strengthsBgZone')" />
+                    </div>
+                    <img id="strengthsBgPreview" class="upload-preview" src="" alt="Core Strengths background preview" />
+                    <input type="hidden" name="strengths_bg_image" id="strengths_bg_image_val" />
+                    <div id="strengthsBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Our Process BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-industry" style="color:var(--accent);font-size:.8rem;"></i> Our Process Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="mfgBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'manufacturing_bg_image','mfgBgPreview','mfgBgZone')" />
+                    </div>
+                    <img id="mfgBgPreview" class="upload-preview" src="" alt="Our Process background preview" />
+                    <input type="hidden" name="manufacturing_bg_image" id="manufacturing_bg_image_val" />
+                    <div id="mfgBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Product Portfolio BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-box-open" style="color:var(--accent);font-size:.8rem;"></i> Product Portfolio Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="productsBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'products_bg_image','productsBgPreview','productsBgZone')" />
+                    </div>
+                    <img id="productsBgPreview" class="upload-preview" src="" alt="Products background preview" />
+                    <input type="hidden" name="products_bg_image" id="products_bg_image_val" />
+                    <div id="productsBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Quality Assurance BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-shield-alt" style="color:var(--accent);font-size:.8rem;"></i> Quality Assurance Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="qualityBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'quality_bg_image','qualityBgPreview','qualityBgZone')" />
+                    </div>
+                    <img id="qualityBgPreview" class="upload-preview" src="" alt="Quality background preview" />
+                    <input type="hidden" name="quality_bg_image" id="quality_bg_image_val" />
+                    <div id="qualityBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Trusted By BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-handshake" style="color:var(--accent);font-size:.8rem;"></i> Trusted By Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="clientsBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'clients_bg_image','clientsBgPreview','clientsBgZone')" />
+                    </div>
+                    <img id="clientsBgPreview" class="upload-preview" src="" alt="Clients background preview" />
+                    <input type="hidden" name="clients_bg_image" id="clients_bg_image_val" />
+                    <div id="clientsBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Why Kraftman BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-trophy" style="color:var(--accent);font-size:.8rem;"></i> Why Kraftman Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="whyusBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'whyus_bg_image','whyusBgPreview','whyusBgZone')" />
+                    </div>
+                    <img id="whyusBgPreview" class="upload-preview" src="" alt="Why Kraftman background preview" />
+                    <input type="hidden" name="whyus_bg_image" id="whyus_bg_image_val" />
+                    <div id="whyusBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Quality & Compliance BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-certificate" style="color:var(--accent);font-size:.8rem;"></i> Quality &amp; Compliance Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="certsBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'certifications_bg_image','certsBgPreview','certsBgZone')" />
+                    </div>
+                    <img id="certsBgPreview" class="upload-preview" src="" alt="Certifications background preview" />
+                    <input type="hidden" name="certifications_bg_image" id="certifications_bg_image_val" />
+                    <div id="certsBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                  <!-- Get In Touch BG -->
+                  <div>
+                    <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fa fa-envelope" style="color:var(--accent);font-size:.8rem;"></i> Get In Touch Section Background
+                    </label>
+                    <div class="upload-zone" style="padding:16px;" id="contactBgZone">
+                      <i class="fa fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+                      <p style="pointer-events:none;margin:0;font-size:.82rem;"><strong>Click</strong> or drag &amp; drop</p>
+                      <input type="file" accept="image/*" onchange="uploadSectionBg(this,'contact_bg_image','contactBgPreview','contactBgZone')" />
+                    </div>
+                    <img id="contactBgPreview" class="upload-preview" src="" alt="Contact background preview" />
+                    <input type="hidden" name="contact_bg_image" id="contact_bg_image_val" />
+                    <div id="contactBgCurrent" style="font-size:.72rem;color:var(--text-dim);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- NPD Video URL -->
+            <div class="card" style="margin-top:20px;">
+              <div class="card-header"><div class="card-title"><i class="fa fa-play-circle"></i> NPD Process Video</div></div>
+              <div class="card-body">
+                <label class="form-label">Video URL <span style="color:var(--text-dim);font-weight:400;">(YouTube, Vimeo, or direct .mp4 link)</span></label>
+                <input type="url" class="form-input" name="npd_video_url" id="npd_video_url"
+                  placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
+                  style="font-size:.88rem;" />
+                <p style="margin:6px 0 0;font-size:.76rem;color:var(--text-dim);">
+                  <i class="fa fa-info-circle"></i>
+                  Paste a YouTube / Vimeo URL or a direct video file URL. Leave blank to hide the video section.
+                </p>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- CHANGE PASSWORD -->
+      <div class="page" id="page-password">
+        <div class="card" style="max-width:420px;">
+          <div class="card-header"><div class="card-title"><i class="fa fa-key"></i> Change Password</div></div>
+          <form id="pwdForm">
+            <div class="fg2"><label>Current Password</label><input type="password" name="current_password" required /></div>
+            <div class="fg2"><label>New Password (min 8 chars)</label><input type="password" name="new_password" minlength="8" required /></div>
+            <div class="fg2"><label>Confirm New Password</label><input type="password" name="confirm_password" required /></div>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Update Password</button>
+          </form>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /app-layout -->
+</div><!-- /appView -->
+
+<!-- ═══ PRODUCT MODAL ════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <h3 id="productModalTitle">Add Product</h3>
+    <input type="hidden" id="productId" />
+    <div class="fg-row">
+      <div class="fg2"><label>Name *</label><input type="text" id="prodName" required /></div>
+      <div class="fg2">
+        <label>Category *</label>
+        <select id="prodCat">
+          <option>Mono Cartons</option>
+          <option>Corrugated Solutions</option>
+          <option>Display Boxes</option>
+          <option>Litho Laminated</option>
+          <option>Hangtags & Labels</option>
+          <option>Bellybands & Inserts</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg2"><label>Description</label><textarea id="prodDesc" rows="3"></textarea></div>
+    <div class="fg-row">
+      <div class="fg2"><label>Sort Order</label><input type="number" id="prodSort" value="0" /></div>
+      <div class="fg2"><label>Status</label><select id="prodActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+    </div>
+    <div class="fg2">
+      <label>Product Image</label>
+      <div class="upload-zone" id="prodUploadZone">
+        <i class="fa fa-image" style="font-size:1.5rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+        <p style="pointer-events:none;margin:0;">Click to browse or drag &amp; drop</p>
+        <p style="pointer-events:none;font-size:.78rem;margin-top:4px;opacity:.6;">JPG, PNG, WEBP — max 10MB</p>
+        <input type="file" id="prodImageInput" accept="image/*" onchange="previewProdImage(this)" />
+      </div>
+      <img id="prodImagePreview" class="upload-preview" src="" alt="" />
+    </div>
+
+    <!-- Gallery Images (only in edit mode) -->
+    <div id="prodGallerySection" style="display:none;margin-top:8px;">
+      <label style="font-weight:600;display:block;margin-bottom:8px;">
+        <i class="fa fa-images" style="margin-right:6px;color:var(--accent)"></i>Gallery Images
+        <span style="font-weight:400;font-size:.8rem;color:var(--muted);margin-left:6px;">(shown in lightbox slideshow on public site)</span>
+      </label>
+      <div id="prodGalleryGrid" style="display:flex;flex-wrap:wrap;gap:10px;min-height:80px;padding:12px;background:var(--bg2);border-radius:8px;border:1px solid var(--border);align-items:flex-start;">
+        <label id="prodGalleryAddBtn" style="width:80px;height:80px;border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;color:var(--muted);gap:4px;flex-shrink:0;transition:border-color .2s;">
+          <i class="fa fa-plus" style="font-size:1.2rem;"></i>Add
+          <input type="file" accept="image/*" style="display:none;" onchange="uploadProdGalleryImage(this)" />
+        </label>
+      </div>
+      <p style="font-size:.75rem;color:var(--muted);margin:6px 0 0;">Click a thumbnail to remove it. Supports JPG, PNG, WEBP.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('productModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()"><i class="fa fa-save"></i> Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GALLERY MODAL ════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal">
+    <h3 id="galleryModalTitle">Add Gallery Image</h3>
+    <input type="hidden" id="galleryId" />
+    <div class="fg-row">
+      <div class="fg2"><label>Title</label><input type="text" id="galTitle" /></div>
+      <div class="fg2"><label>Category</label><input type="text" id="galCat" placeholder="e.g. Mono Cartons" /></div>
+    </div>
+    <div class="fg2"><label>Alt Text (SEO)</label><input type="text" id="galAlt" placeholder="Describe the image for SEO" /></div>
+    <div class="fg-row">
+      <div class="fg2"><label>Sort Order</label><input type="number" id="galSort" value="0" /></div>
+      <div class="fg2"><label>Status</label><select id="galActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+    </div>
+    <div class="fg2">
+      <label>Image *</label>
+      <div class="upload-zone" id="galUploadZone">
+        <i class="fa fa-image" style="font-size:1.5rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+        <p style="pointer-events:none;margin:0;">Click to browse or drag &amp; drop</p>
+        <p style="pointer-events:none;font-size:.78rem;margin-top:4px;opacity:.6;">JPG, PNG, WEBP — max 10MB</p>
+        <input type="file" id="galImageInput" accept="image/*" onchange="previewGalImage(this)" />
+      </div>
+      <img id="galImagePreview" class="upload-preview" src="" alt="" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('galleryModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGalleryItem()"><i class="fa fa-save"></i> Save Image</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CAPABILITY MODAL ═════════════════════════════════════════════ -->
+<div class="modal-overlay" id="capabilityModal">
+  <div class="modal">
+    <h3 id="capModalTitle">Add Capability</h3>
+    <input type="hidden" id="capId" />
+    <div class="fg-row">
+      <div class="fg2"><label>Title *</label><input type="text" id="capTitle" placeholder="e.g. Pre-Press & Design" /></div>
+      <div class="fg2"><label>Icon (Font Awesome class)</label><input type="text" id="capIcon" placeholder="e.g. fa-pencil-ruler" /></div>
+    </div>
+    <div class="fg2"><label>Description</label><textarea id="capDesc" rows="3" placeholder="Brief description of this capability…"></textarea></div>
+    <div class="fg-row">
+      <div class="fg2"><label>Sort Order</label><input type="number" id="capOrder" value="0" min="0" /></div>
+      <div class="fg2"><label>Status</label><select id="capActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+    </div>
+    <div class="fg2">
+      <label>Card Image <span style="font-size:.75rem;color:var(--text-dim)">(optional — shown on card)</span></label>
+      <div class="upload-zone" id="capUploadZone">
+        <i class="fa fa-image" style="font-size:1.5rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+        <p style="pointer-events:none;margin:0;">Click to browse or drag &amp; drop</p>
+        <p style="pointer-events:none;font-size:.78rem;margin-top:4px;opacity:.6;">JPG, PNG, WEBP — max 10MB</p>
+        <input type="file" id="capImageInput" accept="image/*" onchange="previewCapImage(this)" />
+      </div>
+      <img id="capImagePreview" class="upload-preview" src="" alt="" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('capabilityModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCapability()"><i class="fa fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DYNAMIC MODAL ════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="dynamicModal" onclick="if(event.target===this)closeDynModal()">
+  <div class="modal">
+    <h3 id="dynModalTitle"></h3>
+    <div id="dynModalBody"></div>
+  </div>
+</div>
+
+<!-- ═══ TOAST CONTAINER ══════════════════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ─── AUTH STATE ──────────────────────────────────────── */
+let token = localStorage.getItem('kp_token');
+let username = localStorage.getItem('kp_user');
+
+function getToken() { return token; }
+function getHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+}
+function getAuthHeaders() {
+  return { 'Authorization': `Bearer ${token}` };
+}
+
+/* ─── INIT ────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  if (token) showApp();
+  else showLogin();
+});
+
+function showLogin() {
+  document.getElementById('loginView').style.display = 'flex';
+  document.getElementById('appView').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('appView').style.display = 'block';
+  document.getElementById('topbarUser').textContent = `👤 ${username || 'Admin'}`;
+  loadDashboard();
+  loadProducts();
+  loadGallery();
+  loadEnquiries();
+  loadSettings();
+  setupSidebarNav();
+  setupDragDrop();
+}
+function goToSite() { window.open('/', '_blank'); }
+function logout() {
+  localStorage.removeItem('kp_token');
+  localStorage.removeItem('kp_user');
+  token = null;
+  showLogin();
+}
+
+/* ─── LOGIN ───────────────────────────────────────────── */
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  try {
+    const res = await fetch('/admin/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ username: user, password: pass }) });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      token = data.token;
+      username = data.username;
+      localStorage.setItem('kp_token', token);
+      localStorage.setItem('kp_user', username);
+      showApp();
+    } else {
+      errEl.textContent = data.error || 'Invalid credentials';
+      errEl.style.display = 'block';
+    }
+  } catch { errEl.textContent = 'Network error'; errEl.style.display = 'block'; }
+});
+
+/* ─── SIDEBAR NAV ─────────────────────────────────────── */
+function setupSidebarNav() {
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => showPage(btn.dataset.page));
+  });
+}
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page)?.classList.add('active');
+  document.querySelector(`.sidebar-link[data-page="${page}"]`)?.classList.add('active');
+  const titles = { dashboard:'Dashboard', products:'Products', gallery:'Gallery', clients:'Client Logos', certifications:'Certifications & Nominations', capabilities:'Capabilities', sections:'Page Sections', enquiries:'Enquiries', settings:'Site Settings', upload:'Upload Images', password:'Change Password' };
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+  if (page === 'clients') loadClients();
+  if (page === 'certifications') loadCertifications();
+  if (page === 'capabilities') loadCapabilities();
+  if (page === 'sections') loadSectionsPage();
+}
+
+/* ─── DASHBOARD ───────────────────────────────────────── */
+async function loadDashboard() {
+  try {
+    const res = await fetch('/admin/api/stats', { headers: getAuthHeaders() });
+    if (res.status === 401 || res.status === 403) { logout(); return; }
+    const d = await res.json();
+    document.getElementById('s-products').textContent = d.products;
+    document.getElementById('s-gallery').textContent = d.gallery;
+    document.getElementById('s-clients').textContent = d.clients || 0;
+    document.getElementById('s-certs').textContent = d.certifications || 0;
+    document.getElementById('s-total').textContent = d.enquiries_total;
+    document.getElementById('s-new').textContent = d.enquiries_new;
+    if (d.enquiries_new > 0) {
+      const badge = document.getElementById('newBadge');
+      badge.textContent = d.enquiries_new;
+      badge.style.display = 'inline';
+    }
+    const tbody = document.getElementById('recentEnquiriesTable');
+    if (!d.recent_enquiries?.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fa fa-inbox"></i><br/>No enquiries yet</td></tr>';
+    } else {
+      tbody.innerHTML = d.recent_enquiries.map(e => `
+        <tr>
+          <td>${esc(e.name)}</td>
+          <td>${esc(e.company || '—')}</td>
+          <td>${esc(e.product_interest || '—')}</td>
+          <td>${formatDate(e.created_at)}</td>
+          <td><span class="badge badge-${e.status}">${e.status}</span></td>
+        </tr>`).join('');
+    }
+  } catch (err) { console.error(err); }
+}
+
+/* ─── PRODUCTS ────────────────────────────────────────── */
+let products = [];
+async function loadProducts() {
+  try {
+    const res = await fetch('/admin/api/products', { headers: getAuthHeaders() });
+    products = await res.json();
+    renderProductsTable();
+  } catch {}
+}
+function renderProductsTable() {
+  const tbody = document.getElementById('productsTable');
+  if (!products.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fa fa-box"></i><br/>No products yet</td></tr>'; return; }
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td>${p.image_url && !p.image_url.includes('placeholder') ? `<img class="td-img" src="${esc(p.image_url)}" alt="${esc(p.name)}" />` : `<div class="td-img-ph"><i class="fa fa-image"></i></div>`}</td>
+      <td><strong>${esc(p.name)}</strong></td>
+      <td>${esc(p.category)}</td>
+      <td><span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})"><i class="fa fa-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})" style="margin-left:6px"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+function openProductModal(id) {
+  document.getElementById('productModalTitle').textContent = id ? 'Edit Product' : 'Add Product';
+  document.getElementById('productId').value = id || '';
+  if (!id) {
+    document.getElementById('prodName').value = '';
+    document.getElementById('prodCat').value = 'Mono Cartons';
+    document.getElementById('prodDesc').value = '';
+    document.getElementById('prodSort').value = '0';
+    document.getElementById('prodActive').value = '1';
+    document.getElementById('prodImagePreview').classList.remove('show');
+    document.getElementById('prodImagePreview').src = '';
+    document.getElementById('prodImageInput').value = '';
+    document.getElementById('prodGallerySection').style.display = 'none';
+  }
+  openModal('productModal');
+}
+function editProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  document.getElementById('productId').value = id;
+  document.getElementById('prodName').value = p.name;
+  document.getElementById('prodCat').value = p.category;
+  document.getElementById('prodDesc').value = p.description || '';
+  document.getElementById('prodSort').value = p.sort_order || 0;
+  document.getElementById('prodActive').value = String(p.is_active);
+  if (p.image_url && !p.image_url.includes('placeholder')) {
+    document.getElementById('prodImagePreview').src = p.image_url;
+    document.getElementById('prodImagePreview').classList.add('show');
+  } else {
+    document.getElementById('prodImagePreview').classList.remove('show');
+  }
+  document.getElementById('prodImageInput').value = '';
+  // Show gallery section and populate
+  document.getElementById('prodGallerySection').style.display = 'block';
+  renderProdGallery(id, p.gallery_images);
+  openModal('productModal');
+}
+
+function renderProdGallery(productId, galleryJson) {
+  let gallery = [];
+  try { gallery = JSON.parse(galleryJson || '[]'); } catch {}
+  const grid = document.getElementById('prodGalleryGrid');
+  const addBtn = document.getElementById('prodGalleryAddBtn');
+  // Remove old thumbnails (keep the add button)
+  Array.from(grid.querySelectorAll('.gal-thumb')).forEach(el => el.remove());
+  // Insert thumbnails before the add button
+  gallery.forEach(url => {
+    const div = document.createElement('div');
+    div.className = 'gal-thumb';
+    div.title = 'Click to remove';
+    div.style.cssText = 'width:80px;height:80px;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;';
+    div.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" />'
+      + '<div style="position:absolute;inset:0;background:rgba(220,38,38,0);display:flex;align-items:center;justify-content:center;transition:background .2s;" class="gal-del-overlay">'
+      + '<i class="fa fa-trash" style="color:#fff;font-size:1.1rem;opacity:0;transition:opacity .2s;"></i></div>';
+    div.addEventListener('mouseenter', () => {
+      div.querySelector('.gal-del-overlay').style.background = 'rgba(220,38,38,0.65)';
+      div.querySelector('.fa-trash').style.opacity = '1';
+    });
+    div.addEventListener('mouseleave', () => {
+      div.querySelector('.gal-del-overlay').style.background = 'rgba(220,38,38,0)';
+      div.querySelector('.fa-trash').style.opacity = '0';
+    });
+    div.addEventListener('click', () => deleteProdGalleryImage(productId, url));
+    grid.insertBefore(div, addBtn);
+  });
+}
+
+async function uploadProdGalleryImage(input) {
+  const id = document.getElementById('productId').value;
+  if (!id || !input.files[0]) return;
+  const fd = new FormData();
+  fd.append('image', input.files[0]);
+  input.value = '';
+  try {
+    const res = await fetch('/admin/api/products/' + id + '/gallery', { method: 'POST', headers: getAuthHeaders(), body: fd });
+    const data = await res.json();
+    if (res.ok) {
+      // Reload products list and re-render gallery
+      await loadProducts();
+      const p = products.find(x => x.id === parseInt(id));
+      renderProdGallery(id, p ? p.gallery_images : '[]');
+      toast('success', 'Image added to gallery');
+    } else toast('error', data.error || 'Upload failed');
+  } catch { toast('error', 'Network error'); }
+}
+
+async function deleteProdGalleryImage(productId, url) {
+  if (!confirm('Remove this image from the gallery?')) return;
+  try {
+    const res = await fetch('/admin/api/products/' + productId + '/gallery?url=' + encodeURIComponent(url), {
+      method: 'DELETE', headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (res.ok) {
+      await loadProducts();
+      const p = products.find(x => x.id === parseInt(productId));
+      renderProdGallery(productId, p ? p.gallery_images : '[]');
+      toast('success', 'Image removed');
+    } else toast('error', data.error || 'Failed');
+  } catch { toast('error', 'Network error'); }
+}
+async function saveProduct() {
+  const id = document.getElementById('productId').value;
+  const fd = new FormData();
+  fd.append('name', document.getElementById('prodName').value);
+  fd.append('category', document.getElementById('prodCat').value);
+  fd.append('description', document.getElementById('prodDesc').value);
+  fd.append('sort_order', document.getElementById('prodSort').value);
+  fd.append('is_active', document.getElementById('prodActive').value);
+  const imgFile = document.getElementById('prodImageInput').files[0];
+  if (imgFile) fd.append('image', imgFile);
+
+  try {
+    const url = id ? `/admin/api/products/${id}` : '/admin/api/products';
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: getAuthHeaders(), body: fd });
+    const data = await res.json();
+    if (res.ok) {
+      toast('success', id ? 'Product updated' : 'Product added');
+      closeModal('productModal');
+      loadProducts();
+    } else toast('error', data.error || 'Failed to save');
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  const res = await fetch(`/admin/api/products/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Product deleted'); loadProducts(); }
+  else toast('error', 'Failed to delete');
+}
+function previewProdImage(input) {
+  if (input.files[0]) {
+    const pr = document.getElementById('prodImagePreview');
+    pr.src = URL.createObjectURL(input.files[0]);
+    pr.classList.add('show');
+  }
+}
+
+/* ─── GALLERY ─────────────────────────────────────────── */
+let galleryItems = [];
+async function loadGallery() {
+  try {
+    const res = await fetch('/admin/api/gallery', { headers: getAuthHeaders() });
+    galleryItems = await res.json();
+    renderGalleryTable();
+  } catch {}
+}
+function renderGalleryTable() {
+  const tbody = document.getElementById('galleryTable');
+  if (!galleryItems.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fa fa-images"></i><br/>No gallery images yet</td></tr>'; return; }
+  tbody.innerHTML = galleryItems.map(g => `
+    <tr>
+      <td><img class="td-img" src="${esc(g.image_url)}" alt="${esc(g.alt_text || g.title || '')}" /></td>
+      <td>${esc(g.title || '—')}</td>
+      <td>${esc(g.category || '—')}</td>
+      <td><span class="badge ${g.is_active ? 'badge-active' : 'badge-inactive'}">${g.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-secondary btn-sm" onclick="editGalleryItem(${g.id})"><i class="fa fa-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteGalleryItem(${g.id})" style="margin-left:6px"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+function openGalleryModal() {
+  document.getElementById('galleryModalTitle').textContent = 'Add Gallery Image';
+  document.getElementById('galleryId').value = '';
+  document.getElementById('galTitle').value = '';
+  document.getElementById('galCat').value = '';
+  document.getElementById('galAlt').value = '';
+  document.getElementById('galSort').value = '0';
+  document.getElementById('galActive').value = '1';
+  document.getElementById('galImagePreview').classList.remove('show');
+  document.getElementById('galImageInput').value = '';
+  openModal('galleryModal');
+}
+function editGalleryItem(id) {
+  const g = galleryItems.find(x => x.id === id);
+  if (!g) return;
+  document.getElementById('galleryModalTitle').textContent = 'Edit Gallery Image';
+  document.getElementById('galleryId').value = id;
+  document.getElementById('galTitle').value = g.title || '';
+  document.getElementById('galCat').value = g.category || '';
+  document.getElementById('galAlt').value = g.alt_text || '';
+  document.getElementById('galSort').value = g.sort_order || 0;
+  document.getElementById('galActive').value = String(g.is_active !== undefined ? g.is_active : 1);
+  document.getElementById('galImagePreview').src = g.image_url;
+  document.getElementById('galImagePreview').classList.add('show');
+  document.getElementById('galImageInput').value = '';
+  openModal('galleryModal');
+}
+async function saveGalleryItem() {
+  const id = document.getElementById('galleryId').value;
+  const fd = new FormData();
+  fd.append('title', document.getElementById('galTitle').value);
+  fd.append('category', document.getElementById('galCat').value);
+  fd.append('alt_text', document.getElementById('galAlt').value);
+  fd.append('sort_order', document.getElementById('galSort').value);
+  fd.append('is_active', document.getElementById('galActive').value);
+  const imgFile = document.getElementById('galImageInput').files[0];
+  if (imgFile) fd.append('image', imgFile);
+  else if (!id) { toast('error', 'Please select an image'); return; }
+
+  try {
+    const url = id ? `/admin/api/gallery/${id}` : '/admin/api/gallery';
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: getAuthHeaders(), body: fd });
+    const data = await res.json();
+    if (res.ok) { toast('success', 'Gallery image saved'); closeModal('galleryModal'); loadGallery(); }
+    else toast('error', data.error || 'Failed to save');
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteGalleryItem(id) {
+  if (!confirm('Delete this gallery image?')) return;
+  const res = await fetch(`/admin/api/gallery/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Image deleted'); loadGallery(); }
+  else toast('error', 'Failed to delete');
+}
+function previewGalImage(input) {
+  if (input.files[0]) {
+    const pr = document.getElementById('galImagePreview');
+    pr.src = URL.createObjectURL(input.files[0]);
+    pr.classList.add('show');
+  }
+}
+
+/* ─── CLIENTS ─────────────────────────────────────────── */
+let clients = [];
+async function loadClients() {
+  try {
+    const res = await fetch('/admin/api/clients', { headers: getAuthHeaders() });
+    clients = await res.json();
+    renderClientsTable(clients);
+  } catch {}
+}
+function renderClientsTable(items) {
+  const tbody = document.getElementById('clientsTable');
+  if (!tbody) return;
+  if (!items.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No clients yet. Add your first client logo.</td></tr>'; return; }
+  tbody.innerHTML = items.map(c => `<tr>
+    <td>${c.logo_url ? `<img src="${esc(c.logo_url)}" style="height:40px;max-width:80px;object-fit:contain;border-radius:4px;" />` : '<span style="color:var(--text-dim);font-size:.8rem;">No logo</span>'}</td>
+    <td><b>${esc(c.name)}</b>${c.industry ? `<br><small style="color:var(--text-dim)">${esc(c.industry)}</small>` : ''}</td>
+    <td>${esc(c.industry||'—')}</td>
+    <td>${c.website ? `<a href="${esc(c.website)}" target="_blank" style="color:var(--accent);font-size:.8rem;">${esc(c.website)}</a>` : '—'}</td>
+    <td><span class="badge-status ${c.is_active?'active':'inactive'}">${c.is_active?'Active':'Hidden'}</span></td>
+    <td>
+      <button class="btn btn-secondary btn-sm" onclick="openClientModal(${c.id})">Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteClient(${c.id})">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+let editingClientId = null;
+function openClientModal(id) {
+  editingClientId = id || null;
+  const c = id ? clients.find(x => x.id === id) : null;
+  showModal(id ? 'Edit Client Logo' : 'Add Client Logo', `
+    <form id="clientForm" onsubmit="saveClient(event)">
+      <div class="fg2"><label>Client Name *</label>
+        <input name="name" value="${esc(c?.name||'')}" required placeholder="e.g. Tata 1mg" /></div>
+      <div class="fg-row">
+        <div class="fg2"><label>Industry</label>
+          <input name="industry" value="${esc(c?.industry||'')}" placeholder="e.g. Pharmaceuticals" /></div>
+        <div class="fg2"><label>Sort Order</label>
+          <input name="sort_order" type="number" value="${c?.sort_order||0}" /></div>
+      </div>
+      <div class="fg2"><label>Website URL</label>
+        <input name="website" value="${esc(c?.website||'')}" placeholder="https://example.com" /></div>
+      <div class="fg2"><label>Logo Image</label>
+        <div class="upload-zone" style="padding:16px;">
+          <i class="fa fa-image" style="font-size:1.2rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+          <p style="pointer-events:none;margin:0;font-size:.85rem;">Click to browse</p>
+          <input type="file" name="logo" accept="image/*" onchange="previewClientLogo(this)" />
+        </div>
+        ${c?.logo_url ? `<img src="${esc(c.logo_url)}" id="clientLogoPreview" style="max-height:60px;margin-top:8px;border-radius:4px;" />` : '<img id="clientLogoPreview" style="max-height:60px;margin-top:8px;display:none;border-radius:4px;" />'}
+      </div>
+      <div class="fg2"><label>Status</label>
+        <select name="is_active"><option value="1" ${(!c||c.is_active)?'selected':''}>Active</option><option value="0" ${c&&!c.is_active?'selected':''}>Hidden</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDynModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Client</button>
+      </div>
+    </form>
+  `);
+}
+async function saveClient(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const url = editingClientId ? `/admin/api/clients/${editingClientId}` : '/admin/api/clients';
+  const method = editingClientId ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd });
+    if (res.ok) { closeDynModal(); toast('success', editingClientId ? 'Client updated' : 'Client added'); loadClients(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  const res = await fetch(`/admin/api/clients/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Client deleted'); loadClients(); }
+  else toast('error', 'Failed to delete');
+}
+function previewClientLogo(input) {
+  if (input.files[0]) {
+    const pr = document.getElementById('clientLogoPreview');
+    pr.src = URL.createObjectURL(input.files[0]);
+    pr.style.display = 'block';
+  }
+}
+
+/* ─── CERTIFICATIONS ──────────────────────────────────── */
+let certifications = [];
+async function loadCertifications() {
+  try {
+    const res = await fetch('/admin/api/certifications', { headers: getAuthHeaders() });
+    certifications = await res.json();
+    renderCertsTable(certifications);
+  } catch {}
+}
+function renderCertsTable(items) {
+  const tbody = document.getElementById('certsTable');
+  if (!tbody) return;
+  if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No certifications yet. Add your first.</td></tr>'; return; }
+  tbody.innerHTML = items.map(c => `<tr>
+    <td>${c.image_url ? `<img src="${esc(c.image_url)}" style="height:44px;max-width:80px;object-fit:contain;border-radius:4px;" />` : `<i class="fa ${esc(c.badge_icon||'fa-certificate')}" style="font-size:1.5rem;color:var(--accent);"></i>`}</td>
+    <td><b>${esc(c.title)}</b></td>
+    <td style="max-width:240px;font-size:.82rem;color:var(--text-dim)">${esc(c.body||'')}</td>
+    <td><span class="badge-status ${c.is_active?'active':'inactive'}">${c.is_active?'Active':'Hidden'}</span></td>
+    <td>
+      <button class="btn btn-secondary btn-sm" onclick="openCertModal(${c.id})">Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteCert(${c.id})">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+let editingCertId = null;
+function openCertModal(id) {
+  editingCertId = id || null;
+  const c = id ? certifications.find(x => x.id === id) : null;
+  const icons = ['fa-certificate','fa-award','fa-leaf','fa-shield-alt','fa-check-circle','fa-star','fa-trophy','fa-medal'];
+  showModal(id ? 'Edit Certification' : 'Add Certification / Nomination', `
+    <form id="certForm" onsubmit="saveCert(event)">
+      <div class="fg2"><label>Title *</label>
+        <input name="title" value="${esc(c?.title||'')}" required placeholder="e.g. ISO 9001:2015 Certified" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea name="body" rows="3" placeholder="Brief description of what this certification means">${esc(c?.body||'')}</textarea></div>
+      <div class="fg2"><label>Certificate / Badge Image</label>
+        <div class="upload-zone" style="padding:16px;">
+          <i class="fa fa-image" style="font-size:1.2rem;margin-bottom:6px;display:block;pointer-events:none;"></i>
+          <p style="pointer-events:none;margin:0;font-size:.85rem;">Click to browse</p>
+          <input type="file" name="image" accept="image/*" onchange="previewCertImage(this)" />
+        </div>
+        ${c?.image_url ? `<img src="${esc(c.image_url)}" id="certImagePreview" style="max-height:80px;margin-top:8px;border-radius:4px;" />` : '<img id="certImagePreview" style="max-height:80px;margin-top:8px;display:none;border-radius:4px;" />'}
+      </div>
+      <div class="fg-row">
+        <div class="fg2"><label>Icon (when no image)</label>
+          <select name="badge_icon">${icons.map(ic => `<option value="${ic}" ${(c?.badge_icon||'fa-certificate')===ic?'selected':''}>${ic}</option>`).join('')}</select></div>
+        <div class="fg2"><label>Sort Order</label>
+          <input name="sort_order" type="number" value="${c?.sort_order||0}" /></div>
+      </div>
+      <div class="fg2"><label>Status</label>
+        <select name="is_active"><option value="1" ${(!c||c.is_active)?'selected':''}>Active</option><option value="0" ${c&&!c.is_active?'selected':''}>Hidden</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDynModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+      </div>
+    </form>
+  `);
+}
+async function saveCert(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const url = editingCertId ? `/admin/api/certifications/${editingCertId}` : '/admin/api/certifications';
+  const method = editingCertId ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd });
+    if (res.ok) { closeDynModal(); toast('success', editingCertId ? 'Certification updated' : 'Certification added'); loadCertifications(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteCert(id) {
+  if (!confirm('Delete this certification?')) return;
+  const res = await fetch(`/admin/api/certifications/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Deleted'); loadCertifications(); }
+  else toast('error', 'Failed to delete');
+}
+function previewCertImage(input) {
+  if (input.files[0]) {
+    const pr = document.getElementById('certImagePreview');
+    pr.src = URL.createObjectURL(input.files[0]);
+    pr.style.display = 'block';
+  }
+}
+
+/* ─── CAPABILITIES ────────────────────────────────────── */
+let capabilities = [];
+async function loadCapabilities() {
+  try {
+    const res = await fetch('/admin/api/capabilities', { headers: getAuthHeaders() });
+    capabilities = await res.json();
+    renderCapabilitiesTable();
+  } catch {}
+}
+function renderCapabilitiesTable() {
+  const tbody = document.getElementById('capabilitiesTable');
+  if (!tbody) return;
+  if (!capabilities.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No capabilities yet. Click "Add Capability" to get started.</td></tr>'; return; }
+  tbody.innerHTML = capabilities.map((c, i) => `
+    <tr>
+      <td><span style="font-weight:700;color:var(--text-dim);">${String(i+1).padStart(2,'0')}</span></td>
+      <td><i class="fa ${esc(c.icon||'fa-cog')}" style="font-size:1.1rem;color:var(--accent);"></i></td>
+      <td><strong>${esc(c.title)}</strong></td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(c.description)}">${esc(c.description)}</td>
+      <td>${c.image_url ? `<img src="${esc(c.image_url)}" style="height:36px;width:54px;object-fit:cover;border-radius:4px;" />` : '<span style="color:var(--text-dim);font-size:.75rem;">None</span>'}</td>
+      <td>${c.sort_order}</td>
+      <td><span class="badge" style="background:${c.is_active?'var(--success)':'#666'}">${c.is_active?'Active':'Inactive'}</span></td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="openCapabilityModal(${c.id})"><i class="fa fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCapability(${c.id})"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+function openCapabilityModal(id) {
+  const c = id ? capabilities.find(x => x.id === id) : null;
+  document.getElementById('capModalTitle').textContent = c ? 'Edit Capability' : 'Add Capability';
+  document.getElementById('capId').value = c?.id || '';
+  document.getElementById('capTitle').value = c?.title || '';
+  document.getElementById('capIcon').value = c?.icon || 'fa-cog';
+  document.getElementById('capDesc').value = c?.description || '';
+  document.getElementById('capOrder').value = c?.sort_order ?? capabilities.length;
+  document.getElementById('capActive').value = c?.is_active !== undefined ? c.is_active : 1;
+  const prev = document.getElementById('capImagePreview');
+  if (c?.image_url) { prev.src = c.image_url; prev.classList.add('show'); } else { prev.src=''; prev.classList.remove('show'); }
+  document.getElementById('capImageInput').value = '';
+  document.getElementById('capabilityModal').classList.add('open');
+}
+async function saveCapability() {
+  const id = document.getElementById('capId').value;
+  const title = document.getElementById('capTitle').value.trim();
+  if (!title) { toast('error','Title is required'); return; }
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', document.getElementById('capDesc').value);
+  fd.append('icon', document.getElementById('capIcon').value);
+  fd.append('sort_order', document.getElementById('capOrder').value);
+  fd.append('is_active', document.getElementById('capActive').value);
+  const img = document.getElementById('capImageInput').files[0];
+  if (img) fd.append('image', img);
+  const url = id ? `/admin/api/capabilities/${id}` : '/admin/api/capabilities';
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd });
+    if (res.ok) { closeModal('capabilityModal'); toast('success', id ? 'Capability updated' : 'Capability added'); loadCapabilities(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteCapability(id) {
+  if (!confirm('Delete this capability?')) return;
+  const res = await fetch(`/admin/api/capabilities/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Deleted'); loadCapabilities(); }
+  else toast('error', 'Failed to delete');
+}
+function previewCapImage(input) {
+  const pr = document.getElementById('capImagePreview');
+  if (input.files[0]) { pr.src = URL.createObjectURL(input.files[0]); pr.classList.add('show'); }
+}
+
+/* ─── ENQUIRIES ───────────────────────────────────────── */
+let enquiries = [];
+async function loadEnquiries() {
+  try {
+    const res = await fetch('/admin/api/enquiries', { headers: getAuthHeaders() });
+    enquiries = await res.json();
+    renderEnquiriesTable(enquiries);
+  } catch {}
+}
+function renderEnquiriesTable(data) {
+  const tbody = document.getElementById('enquiriesTable');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fa fa-inbox"></i><br/>No enquiries yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(e => `
+    <tr>
+      <td><strong>${esc(e.name)}</strong></td>
+      <td>${esc(e.email)}<br/><span class="text-dim">${esc(e.phone || '')}</span></td>
+      <td>${esc(e.product_interest || '—')}</td>
+      <td class="enquiry-msg" title="${esc(e.message)}">${esc(e.message)}</td>
+      <td>${formatDate(e.created_at)}</td>
+      <td>
+        <select class="search-bar" style="min-width:90px;padding:4px 8px;font-size:.75rem;" onchange="updateEnquiryStatus(${e.id}, this.value)">
+          ${['new','read','replied','closed'].map(s => `<option value="${s}" ${e.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteEnquiry(${e.id})"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+function filterEnquiries() {
+  const q = document.getElementById('enquirySearch').value.toLowerCase();
+  const filtered = enquiries.filter(e =>
+    e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q) ||
+    (e.company||'').toLowerCase().includes(q) || (e.product_interest||'').toLowerCase().includes(q)
+  );
+  renderEnquiriesTable(filtered);
+}
+async function updateEnquiryStatus(id, status) {
+  try {
+    const res = await fetch(`/admin/api/enquiries/${id}/status`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ status }) });
+    if (res.ok) { loadEnquiries(); loadDashboard(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed to update status'); }
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteEnquiry(id) {
+  if (!confirm('Delete this enquiry?')) return;
+  const res = await fetch(`/admin/api/enquiries/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+  if (res.ok) { toast('success', 'Enquiry deleted'); loadEnquiries(); loadDashboard(); }
+  else toast('error', 'Failed to delete');
+}
+
+/* ─── SETTINGS ────────────────────────────────────────── */
+async function loadSettings() {
+  try {
+    const res = await fetch('/admin/api/settings', { headers: getAuthHeaders() });
+    const data = await res.json();
+    siteSettings = data; // store globally for sections editor
+    const form = document.getElementById('settingsForm');
+    Object.entries(data).forEach(([k, v]) => {
+      const el = form.querySelector(`[name="${k}"]`);
+      if (el) el.value = v || '';
+    });
+    // Populate section bg image previews
+    const bgFields = { site_logo: ['siteLogoPreview','site_logoCurrent'], hero_bg_image: ['heroBgPreview','heroBgCurrent'], about_bg_image: ['aboutBgPreview','aboutBgCurrent'], about_visual_image: ['aboutVisualPreview','aboutVisualCurrent'], npd_bg_image: ['npdBgPreview','npdBgCurrent'], capabilities_bg_image: ['capsBgPreview','capsBgCurrent'], strengths_bg_image: ['strengthsBgPreview','strengthsBgCurrent'], manufacturing_bg_image: ['mfgBgPreview','mfgBgCurrent'], products_bg_image: ['productsBgPreview','productsBgCurrent'], quality_bg_image: ['qualityBgPreview','qualityBgCurrent'], clients_bg_image: ['clientsBgPreview','clientsBgCurrent'], whyus_bg_image: ['whyusBgPreview','whyusBgCurrent'], certifications_bg_image: ['certsBgPreview','certsBgCurrent'], contact_bg_image: ['contactBgPreview','contactBgCurrent'] };
+    Object.entries(bgFields).forEach(([key, [previewId, currentId]]) => {
+      const url = data[key];
+      if (url) {
+        const img = document.getElementById(previewId);
+        img.src = url; img.classList.add('show');
+        const cur = document.getElementById(currentId);
+        if (cur) cur.textContent = url;
+      }
+    });
+  } catch {}
+}
+async function saveSettings() {
+  const form = document.getElementById('settingsForm');
+  const data = Object.fromEntries(new FormData(form));
+  const res = await fetch('/admin/api/settings', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) });
+  if (res.ok) toast('success', 'Settings saved');
+  else toast('error', 'Failed to save settings');
+}
+
+/* ─── SECTION BG IMAGE UPLOAD ─────────────────────────── */
+async function uploadSectionBg(input, fieldName, previewId, zoneId) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById(zoneId);
+  zone.style.opacity = '.5';
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const res = await fetch('/admin/api/upload', { method: 'POST', headers: getAuthHeaders(), body: fd });
+    const d = await res.json();
+    if (res.ok) {
+      document.getElementById(fieldName + '_val').value = d.url;
+      const img = document.getElementById(previewId);
+      img.src = d.url; img.classList.add('show');
+      const cur = document.getElementById(fieldName.replace('_image','') + 'Current');
+      if (cur) cur.textContent = d.url;
+      toast('success', 'Image uploaded — click Save Settings to apply');
+    } else { toast('error', d.error || 'Upload failed'); }
+  } catch { toast('error', 'Upload failed'); }
+  finally { zone.style.opacity = '1'; }
+}
+
+/* ─── BULK UPLOAD ─────────────────────────────────────── */
+async function handleBulkUpload(files) {
+  const results = document.getElementById('uploadResults');
+  const listEl  = document.getElementById('uploadedFilesList');
+  results.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Uploading…';
+
+  const uploaded = [];
+  for (const file of Array.from(files)) {
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const res = await fetch('/admin/api/upload', { method: 'POST', headers: getAuthHeaders(), body: fd });
+      const d = await res.json();
+      if (res.ok) uploaded.push(d);
+    } catch {}
+  }
+
+  results.innerHTML = `<span style="color:var(--success)"><i class="fa fa-check"></i> ${uploaded.length} image(s) uploaded successfully</span>`;
+
+  listEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px;">
+    ${uploaded.map(u => `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <img src="${esc(u.url)}" style="width:100%;height:100px;object-fit:cover;" />
+        <div style="padding:8px;">
+          <div style="font-size:.72rem;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.filename)}</div>
+          <button onclick="navigator.clipboard.writeText('${esc(u.url)}');toast('success','URL copied!')" class="btn btn-secondary btn-sm" style="margin-top:6px;width:100%"><i class="fa fa-copy"></i> Copy URL</button>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function setupDragDrop() {
+  const zone = document.getElementById('bulkUploadZone');
+  if (!zone) return;
+  // NOTE: No zone.click handler needed — the overlay <input type="file"> handles clicks natively
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    handleBulkUpload(e.dataTransfer.files);
+  });
+}
+
+/* ─── CHANGE PASSWORD ─────────────────────────────────── */
+document.getElementById('pwdForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  if (data.new_password !== data.confirm_password) { toast('error', 'Passwords do not match'); return; }
+  const res = await fetch('/admin/api/change-password', { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) });
+  if (res.ok) { toast('success', 'Password changed successfully'); e.target.reset(); }
+  else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+});
+
+/* ─── PAGE SECTIONS ───────────────────────────────────── */
+let siteSettings = {};
+let currentSectionData = {};
+
+const SECTION_DEFAULTS_ADMIN = {
+  strengths: [
+    { label: 'Strength One', title: 'Quality Excellence', description: 'Die-hard determination to serve clients with utmost quality through rigorous standards and continuous improvement at every stage of production.' },
+    { label: 'Strength Two', title: 'Professional Team', description: 'Qualified professionals oriented to examine the minutest details, ensuring no loose ends in manufacturing and quality assurance processes.' },
+    { label: 'Strength Three', title: 'Client Trust', description: 'Our strength is derived from the immense trust clients place in us, built through consistent delivery, reliability, and transparent communication.' },
+    { label: 'Strength Four', title: 'Technical Capability', description: 'Advanced manufacturing infrastructure combined with engineering expertise to deliver complex packaging solutions efficiently and at scale.' }
+  ],
+  mfg: [
+    { step_num: '01', icon: 'fa-pencil-ruler', title: 'Pre-Press & Design', description: 'ESKO suite & Artios CAD structural design, 3D rendering & photorealistic visualization, dieline development, ICC color management & preflight, rapid prototyping via sample maker, and Adobe Creative Suite.', features: ['ESKO Suite & Artios CAD', '3D Rendering & Visualization', 'ICC Color Management', 'Rapid Prototyping'], image_url: '/uploads/1772778589508-452603.jpg' },
+    { step_num: '02', icon: 'fa-print', title: 'Precision Printing', description: 'Heidelberg multicolor offset presses, GMI-compliant color management, X-Rite i1 & PressSign inline monitoring, tight ΔE color control, and 2-color direct corrugated flexo printing.', features: ['Heidelberg Offset Presses', 'GMI-Compliant Color Mgmt', 'Tight ΔE Color Control', 'X-Rite i1 Inline Monitoring'], image_url: '/uploads/1772778913655-551648.jpg' },
+    { step_num: '03', icon: 'fa-cut', title: 'Post-Press & Finishing', description: 'Flatbed die-cutting up to 52"×72", UV & blister coating, folder-gluing with inline QC, window patching, corrugation A/B/C/E flute up to 5-ply, maximum board width 1400mm.', features: ['Die-Cutting up to 52"×72"', 'UV & Blister Coating', 'A/B/C/E Flute up to 5-Ply', 'Inline QC Folder-Gluers'], image_url: '/uploads/1772778925890-506904.jpg' }
+  ],
+  npd: [
+    { number: '01', icon: 'fa-cube', title: 'Sample Maker', description: 'Advanced technology for rapid prototyping — quick, accurate physical prototypes with drastic reduction in manual labor and development time.' },
+    { number: '02', icon: 'fa-eye', title: '3D Rendering', description: 'Seamless integration using 3D renderings as references for sample maker prototypes — virtual approval before physical production begins.' },
+    { number: '03', icon: 'fa-truck', title: 'Transit Testing', description: 'Rigorous testing integrated into the development process — ensuring product safety and durability during transit before launch.' }
+  ],
+  quality: [
+    { icon: 'fa-flask', title: 'Quality Control Laboratory', description: 'State-of-the-art testing facilities with comprehensive material testing protocols. ISO-compliant procedures for every batch.' },
+    { icon: 'fa-search', title: 'Inspection Systems', description: 'Multi-stage inspection process with automated quality checks and manual verification. Real-time defect detection throughout production.' },
+    { icon: 'fa-shield-alt', title: 'Compliance & Standards', description: 'ISO, BRC, and FSC adherence with regular third-party audits and fully documented Quality Management System.' },
+    { icon: 'fa-vials', title: 'Testing Capabilities', description: 'Burst strength, compression, and durability testing; color consistency verification; transit and drop test simulations.' },
+    { icon: 'fa-chart-line', title: 'Continuous Improvement', description: 'Six Sigma and lean manufacturing methodologies, root cause analysis, and ongoing employee training programs.' }
+  ],
+  whyus: [
+    { icon: 'fa-cogs', title: 'Advanced Manufacturing', description: 'State-of-the-art Heidelberg presses, CTP technology, and automated finishing lines ensure precision, repeatability, and efficiency at scale.' },
+    { icon: 'fa-check-double', title: 'GMI-Certified Quality', description: 'Equipped testing laboratory with rigorous multi-stage quality control at every production phase. Tight ΔE color control across long runs.' },
+    { icon: 'fa-bolt', title: 'Reduced Turnaround', description: 'Sample maker + 3D rendering integration dramatically reduces development cycles. Rapid prototyping with quick physical mock-ups.' },
+    { icon: 'fa-leaf', title: 'Sustainability Focus', description: 'FSC-certified materials, eco-friendly paperboard, and sustainable manufacturing practices throughout every step of production.' },
+    { icon: 'fa-users', title: 'Expert Team', description: 'Qualified professionals in design, engineering, quality control, and customer service — detail-oriented at every stage.' },
+    { icon: 'fa-handshake', title: 'Client Partnership', description: 'Collaborative approach with a proven track record delivering customized solutions that meet specific client requirements and brand standards.' }
+  ]
+};
+
+const SECTION_DB_KEY = { strengths: 'strengths_data', mfg: 'mfg_steps_data', npd: 'npd_steps_data', quality: 'quality_items_data', whyus: 'whyus_items_data' };
+
+function getSectionDataAdmin(key) {
+  const dbKey = SECTION_DB_KEY[key] || (key + '_data');
+  try { if (siteSettings[dbKey]) return JSON.parse(siteSettings[dbKey]); } catch {}
+  return JSON.parse(JSON.stringify(SECTION_DEFAULTS_ADMIN[key] || []));
+}
+
+async function loadSectionsPage() {
+  if (!siteSettings || !Object.keys(siteSettings).length) {
+    try {
+      const res = await fetch('/admin/api/settings', { headers: getAuthHeaders() });
+      siteSettings = await res.json();
+    } catch {}
+  }
+  currentSectionData = {
+    strengths: getSectionDataAdmin('strengths'),
+    mfg:       getSectionDataAdmin('mfg'),
+    npd:       getSectionDataAdmin('npd'),
+    quality:   getSectionDataAdmin('quality'),
+    whyus:     getSectionDataAdmin('whyus')
+  };
+  renderStrengthsAdmin();
+  renderMfgAdmin();
+  renderNpdAdmin();
+  renderQualityAdmin();
+  renderWhyusAdmin();
+}
+
+function renderStrengthsAdmin() {
+  const tbody = document.getElementById('strengthsAdminList');
+  if (!tbody) return;
+  const items = currentSectionData.strengths || [];
+  tbody.innerHTML = items.map((item, i) => `<tr>
+    <td><b style="color:var(--accent)">${i+1}</b></td>
+    <td style="font-size:.82rem">${esc(item.label||'')}</td>
+    <td><b>${esc(item.title)}</b></td>
+    <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--text-dim)" title="${esc(item.description)}">${esc(item.description)}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="editSectionItem('strengths',${i})"><i class="fa fa-edit"></i> Edit</button></td>
+  </tr>`).join('');
+}
+
+function renderMfgAdmin() {
+  const tbody = document.getElementById('mfgAdminList');
+  if (!tbody) return;
+  const items = currentSectionData.mfg || [];
+  tbody.innerHTML = items.map((item, i) => `<tr>
+    <td><b style="color:var(--accent)">${esc(item.step_num||String(i+1).padStart(2,'0'))}</b></td>
+    <td><i class="fa ${esc(item.icon||'fa-cog')}" style="color:var(--accent)"></i></td>
+    <td><b>${esc(item.title)}</b></td>
+    <td style="font-size:.8rem;color:var(--text-dim)">${(item.features||[]).map(f => esc(f)).join(', ')}</td>
+    <td>${item.image_url ? `<img src="${esc(item.image_url)}" style="height:36px;width:54px;object-fit:cover;border-radius:4px;" />` : '<span style="color:var(--text-dim);font-size:.75rem">None</span>'}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="editSectionItem('mfg',${i})"><i class="fa fa-edit"></i> Edit</button></td>
+  </tr>`).join('');
+}
+
+function renderNpdAdmin() {
+  const tbody = document.getElementById('npdAdminList');
+  if (!tbody) return;
+  const items = currentSectionData.npd || [];
+  tbody.innerHTML = items.map((item, i) => `<tr>
+    <td><b style="color:var(--accent)">${esc(item.number||String(i+1).padStart(2,'0'))}</b></td>
+    <td><i class="fa ${esc(item.icon||'fa-cog')}" style="color:var(--accent)"></i></td>
+    <td><b>${esc(item.title)}</b></td>
+    <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--text-dim)" title="${esc(item.description)}">${esc(item.description)}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="editSectionItem('npd',${i})"><i class="fa fa-edit"></i> Edit</button></td>
+  </tr>`).join('');
+}
+
+function renderQualityAdmin() {
+  const tbody = document.getElementById('qualityAdminList');
+  if (!tbody) return;
+  const items = currentSectionData.quality || [];
+  tbody.innerHTML = items.map((item, i) => `<tr>
+    <td><b style="color:var(--accent)">${i+1}</b></td>
+    <td><i class="fa ${esc(item.icon||'fa-check')}" style="color:var(--accent)"></i></td>
+    <td><b>${esc(item.title)}</b></td>
+    <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--text-dim)" title="${esc(item.description)}">${esc(item.description)}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="editSectionItem('quality',${i})"><i class="fa fa-edit"></i> Edit</button></td>
+  </tr>`).join('');
+}
+
+function renderWhyusAdmin() {
+  const tbody = document.getElementById('whyusAdminList');
+  if (!tbody) return;
+  const items = currentSectionData.whyus || [];
+  tbody.innerHTML = items.map((item, i) => `<tr>
+    <td><b style="color:var(--accent)">${i+1}</b></td>
+    <td><i class="fa ${esc(item.icon||'fa-star')}" style="color:var(--accent)"></i></td>
+    <td><b>${esc(item.title)}</b></td>
+    <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--text-dim)" title="${esc(item.description)}">${esc(item.description)}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="editSectionItem('whyus',${i})"><i class="fa fa-edit"></i> Edit</button></td>
+  </tr>`).join('');
+}
+
+function editSectionItem(key, idx) {
+  if (!currentSectionData[key] || currentSectionData[key][idx] === undefined) return;
+  const item = currentSectionData[key][idx];
+  const num = idx + 1;
+  let fields = '';
+  const sectionLabels = { strengths: 'Core Strength', mfg: 'Manufacturing Step', npd: 'NPD Step', quality: 'Quality Item', whyus: 'Why Choose Us Item' };
+
+  if (key === 'strengths') {
+    fields = `
+      <div class="fg2"><label>Label <span style="color:var(--text-dim);font-size:.75rem">(e.g. "Strength One")</span></label>
+        <input id="si-label" value="${esc(item.label||'')}" placeholder="Strength ${num}" /></div>
+      <div class="fg2"><label>Title *</label>
+        <input id="si-title" value="${esc(item.title||'')}" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea id="si-desc" rows="4">${esc(item.description||'')}</textarea></div>`;
+  } else if (key === 'mfg') {
+    fields = `
+      <div class="fg-row">
+        <div class="fg2"><label>Step Number</label>
+          <input id="si-step" value="${esc(item.step_num||String(num).padStart(2,'0'))}" /></div>
+        <div class="fg2"><label>Icon <span style="color:var(--text-dim);font-size:.75rem">(FontAwesome)</span></label>
+          <input id="si-icon" value="${esc(item.icon||'fa-cog')}" placeholder="fa-pencil-ruler" /></div>
+      </div>
+      <div class="fg2"><label>Title *</label>
+        <input id="si-title" value="${esc(item.title||'')}" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea id="si-desc" rows="3">${esc(item.description||'')}</textarea></div>
+      <div class="fg2"><label>Feature Checklist <span style="color:var(--text-dim);font-size:.75rem">(one per line)</span></label>
+        <textarea id="si-features" rows="4" placeholder="One feature per line">${esc((item.features||[]).join('\n'))}</textarea></div>
+      <div class="fg2"><label>Background Image</label>
+        <div class="upload-zone" style="padding:12px;" id="siImgZone">
+          <i class="fa fa-cloud-upload-alt" style="font-size:1.2rem;margin-bottom:4px;display:block;pointer-events:none;"></i>
+          <p style="pointer-events:none;margin:0;font-size:.82rem;">Click to upload a new image</p>
+          <input type="file" accept="image/*" onchange="uploadSectionItemImage(this,'siImgPreview','si-imgurl')" />
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;${item.image_url?'':'display:none'}" id="siImgRow">
+          <img id="siImgPreview" src="${esc(item.image_url||'')}" style="max-height:80px;border-radius:4px;object-fit:cover;" />
+          <button type="button" onclick="removeSectionItemImage()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.78rem;white-space:nowrap;"><i class="fa fa-trash"></i> Remove</button>
+        </div>
+        <input type="hidden" id="si-imgurl" value="${esc(item.image_url||'')}" /></div>`;
+  } else if (key === 'npd') {
+    fields = `
+      <div class="fg-row">
+        <div class="fg2"><label>Step Number</label>
+          <input id="si-number" value="${esc(item.number||String(num).padStart(2,'0'))}" /></div>
+        <div class="fg2"><label>Icon <span style="color:var(--text-dim);font-size:.75rem">(FontAwesome)</span></label>
+          <input id="si-icon" value="${esc(item.icon||'fa-cog')}" placeholder="fa-cube" /></div>
+      </div>
+      <div class="fg2"><label>Title *</label>
+        <input id="si-title" value="${esc(item.title||'')}" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea id="si-desc" rows="4">${esc(item.description||'')}</textarea></div>
+      <div class="fg2"><label>Card Image</label>
+        <div class="upload-zone" style="padding:12px;" id="siImgZone">
+          <i class="fa fa-cloud-upload-alt" style="font-size:1.2rem;margin-bottom:4px;display:block;pointer-events:none;"></i>
+          <p style="pointer-events:none;margin:0;font-size:.82rem;">Click to upload a new image</p>
+          <input type="file" accept="image/*" onchange="uploadSectionItemImage(this,'siImgPreview','si-imgurl')" />
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;${item.image_url?'':'display:none'}" id="siImgRow">
+          <img id="siImgPreview" src="${esc(item.image_url||'')}" style="max-height:80px;border-radius:4px;object-fit:cover;" />
+          <button type="button" onclick="removeSectionItemImage()" style="background:#c0392b;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.78rem;white-space:nowrap;"><i class="fa fa-trash"></i> Remove</button>
+        </div>
+        <input type="hidden" id="si-imgurl" value="${esc(item.image_url||'')}" /></div>`;
+  } else if (key === 'quality') {
+    fields = `
+      <div class="fg2"><label>Icon <span style="color:var(--text-dim);font-size:.75rem">(FontAwesome, e.g. fa-flask)</span></label>
+        <input id="si-icon" value="${esc(item.icon||'fa-check')}" placeholder="fa-flask" /></div>
+      <div class="fg2"><label>Title *</label>
+        <input id="si-title" value="${esc(item.title||'')}" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea id="si-desc" rows="4">${esc(item.description||'')}</textarea></div>`;
+  } else if (key === 'whyus') {
+    fields = `
+      <div class="fg2"><label>Icon <span style="color:var(--text-dim);font-size:.75rem">(FontAwesome, e.g. fa-cogs)</span></label>
+        <input id="si-icon" value="${esc(item.icon||'fa-star')}" placeholder="fa-cogs" /></div>
+      <div class="fg2"><label>Title *</label>
+        <input id="si-title" value="${esc(item.title||'')}" /></div>
+      <div class="fg2"><label>Description</label>
+        <textarea id="si-desc" rows="4">${esc(item.description||'')}</textarea></div>`;
+  }
+
+  showModal(`Edit ${sectionLabels[key] || 'Item'} ${num}`, `<div>
+    ${fields}
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeDynModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="saveSectionItem('${key}',${idx})"><i class="fa fa-save"></i> Save &amp; Apply</button>
+    </div>
+  </div>`);
+}
+
+function saveSectionItem(key, idx) {
+  if (!currentSectionData[key] || currentSectionData[key][idx] === undefined) return;
+  const item = Object.assign({}, currentSectionData[key][idx]);
+
+  const titleEl = document.getElementById('si-title');
+  if (!titleEl || !titleEl.value.trim()) { toast('error', 'Title is required'); return; }
+  item.title = titleEl.value.trim();
+
+  const descEl  = document.getElementById('si-desc');    if (descEl)    item.description = descEl.value.trim();
+  const iconEl  = document.getElementById('si-icon');    if (iconEl)    item.icon        = iconEl.value.trim();
+  const labelEl = document.getElementById('si-label');   if (labelEl)   item.label       = labelEl.value.trim();
+  const numEl   = document.getElementById('si-number');  if (numEl)     item.number      = numEl.value.trim();
+  const stepEl  = document.getElementById('si-step');    if (stepEl)    item.step_num    = stepEl.value.trim();
+  const featEl  = document.getElementById('si-features'); if (featEl)   item.features    = featEl.value.split('\n').map(s => s.trim()).filter(Boolean);
+  const imgEl   = document.getElementById('si-imgurl');  if (imgEl) item.image_url = imgEl.value || '';
+
+  currentSectionData[key][idx] = item;
+  closeDynModal();
+
+  const renderers = { strengths: renderStrengthsAdmin, mfg: renderMfgAdmin, npd: renderNpdAdmin, quality: renderQualityAdmin, whyus: renderWhyusAdmin };
+  if (renderers[key]) renderers[key]();
+  saveSectionData(key);
+}
+
+async function saveSectionData(key) {
+  const data = currentSectionData[key];
+  if (!data) return;
+  const labels = { strengths: 'Core Strengths', mfg: 'Manufacturing', npd: 'NPD', quality: 'Quality Assurance', whyus: 'Why Choose Us' };
+  try {
+    const res = await fetch('/admin/api/settings', {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ [SECTION_DB_KEY[key] || (key + '_data')]: JSON.stringify(data) })
+    });
+    if (res.ok) {
+      siteSettings[SECTION_DB_KEY[key] || (key + '_data')] = JSON.stringify(data);
+      toast('success', `${labels[key] || 'Section'} saved successfully`);
+    } else { toast('error', 'Failed to save section'); }
+  } catch { toast('error', 'Network error'); }
+}
+
+async function uploadSectionItemImage(input, previewId, hiddenId) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById('siImgZone');
+  if (zone) zone.style.opacity = '.5';
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const res = await fetch('/admin/api/upload', { method: 'POST', headers: getAuthHeaders(), body: fd });
+    const d = await res.json();
+    if (res.ok) {
+      const hidden = document.getElementById(hiddenId); if (hidden) hidden.value = d.url;
+      const preview = document.getElementById(previewId); if (preview) { preview.src = d.url; }
+      const row = document.getElementById('siImgRow'); if (row) row.style.display = 'flex';
+      toast('success', 'Image uploaded — click Save & Apply to apply');
+    } else { toast('error', d.error || 'Upload failed'); }
+  } catch { toast('error', 'Upload failed'); }
+  finally { if (zone) zone.style.opacity = '1'; }
+}
+
+function removeSectionItemImage() {
+  const hidden = document.getElementById('si-imgurl');
+  const preview = document.getElementById('siImgPreview');
+  const row = document.getElementById('siImgRow');
+  if (hidden) hidden.value = '';
+  if (preview) { preview.src = ''; }
+  if (row) row.style.display = 'none';
+}
+
+/* ─── MODAL HELPERS ───────────────────────────────────── */
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+function showModal(title, bodyHtml) {
+  document.getElementById('dynModalTitle').textContent = title;
+  document.getElementById('dynModalBody').innerHTML = bodyHtml;
+  document.getElementById('dynamicModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDynModal() {
+  document.getElementById('dynamicModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', (e) => { if (e.target === m) closeModal(m.id); });
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id)); } });
+
+/* ─── TOAST ───────────────────────────────────────────── */
+function toast(type, msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa fa-${type==='success'?'check-circle':'exclamation-circle'}"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(40px)'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+/* ─── UTILS ───────────────────────────────────────────── */
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatDate(dt) {
+  if (!dt) return '—';
+  return new Date(dt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>
