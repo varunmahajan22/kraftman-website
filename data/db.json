@@ -1,0 +1,335 @@
+{
+  "admins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password_hash": "$2a$12$v75Grqude7AsviPGpeIPMe1vdWgTk/bCItjuJ4FdwPRo8H7Rlx9Me",
+      "created_at": "2026-02-27T12:30:05.851Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "category": "Mono Cartons",
+      "name": "Retail Mono Carton",
+      "description": "Premium printed mono cartons with vibrant color, UV, lamination and foiling options for FMCG and retail.",
+      "image_url": "/uploads/1772774479419-701546.jpg",
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-03-08T00:52:27.892Z",
+      "gallery_images": "[\"/uploads/1772778589508-452603.jpg\",\"/uploads/1772778913655-551648.jpg\",\"/uploads/1772778925890-506904.jpg\"]"
+    },
+    {
+      "id": 2,
+      "category": "Mono Cartons",
+      "name": "Pharmaceutical Carton",
+      "description": "Compliance-grade pharmaceutical packaging with precision printing and structural integrity.",
+      "image_url": "/uploads/1772933694241-253951.jpg",
+      "sort_order": 2,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-03-08T01:34:54.336Z",
+      "gallery_images": "[\"/uploads/1772932170664-392123.jpg\",\"/uploads/1772932908379-856159.jpg\"]"
+    },
+    {
+      "id": 4,
+      "category": "Corrugated Solutions",
+      "name": "Master Shipper Carton",
+      "description": "Heavy-duty corrugated boxes, A/B/C/E flute, up to 5-ply for superior transit protection.",
+      "image_url": "/uploads/1772846123635-494420.jpg",
+      "sort_order": 4,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-03-07T00:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "category": "Corrugated Solutions",
+      "name": "E-Commerce Box",
+      "description": "Right-sized e-commerce packaging with branded 2-colour direct flexo print.",
+      "image_url": "/images/placeholder-product.svg",
+      "sort_order": 5,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-02-27T12:30:05.852Z"
+    },
+    {
+      "id": 6,
+      "category": "Display Boxes",
+      "name": "PDQ Display Unit",
+      "description": "Point-of-purchase display units engineered for retail shelf visibility and product merchandising.",
+      "image_url": "/images/placeholder-product.svg",
+      "sort_order": 6,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-02-27T12:30:05.852Z"
+    },
+    {
+      "id": 7,
+      "category": "Litho Laminated",
+      "name": "Litho Laminated Box",
+      "description": "Premium litho print on board for high-end product presentation in retail.",
+      "image_url": "/images/placeholder-product.svg",
+      "sort_order": 7,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-02-27T12:30:05.852Z"
+    },
+    {
+      "id": 8,
+      "category": "Hangtags & Labels",
+      "name": "Custom Hangtag",
+      "description": "Brand-differentiated hangtags for apparel and retail applications with premium finishes.",
+      "image_url": "/images/placeholder-product.svg",
+      "sort_order": 8,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-02-27T12:30:05.852Z"
+    },
+    {
+      "id": 9,
+      "category": "Bellybands & Inserts",
+      "name": "Decorative Bellyband",
+      "description": "Functional and decorative bellybands and inserts for product presentation and protection.",
+      "image_url": "/images/placeholder-product.svg",
+      "sort_order": 9,
+      "is_active": 1,
+      "created_at": "2026-02-27T12:30:05.852Z",
+      "updated_at": "2026-02-27T12:30:05.852Z"
+    }
+  ],
+  "gallery": [
+    {
+      "id": 2,
+      "title": "Packaging Design Prototypes",
+      "category": "Pre-Press",
+      "image_url": "/uploads/1772786855438-841115.jpg",
+      "alt_text": "Structural packaging design sketches and paper prototypes on a design desk",
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-03-06T08:47:35.530Z"
+    },
+    {
+      "id": 3,
+      "title": "Cosmetics Packaging",
+      "category": "Products",
+      "image_url": "/uploads/1772846073918-323542.jpg",
+      "alt_text": "Premium cosmetics mono cartons in pastel colours – green, blue and pink",
+      "sort_order": 2,
+      "is_active": 1,
+      "created_at": "2026-03-07T01:14:34.016Z"
+    },
+    {
+      "id": 4,
+      "title": "Pre-Press Design Studio",
+      "category": "Pre-Press",
+      "image_url": "/uploads/1772846085338-127333.jpg",
+      "alt_text": "Pre-press design workstation with colour swatches and design tools",
+      "sort_order": 3,
+      "is_active": 1,
+      "created_at": "2026-03-07T01:14:45.430Z"
+    },
+    {
+      "id": 5,
+      "title": "Colour Measurement",
+      "category": "Quality",
+      "image_url": "/uploads/1772846105836-432557.jpg",
+      "alt_text": "Spectrophotometer scanning a colour calibration chart for print accuracy",
+      "sort_order": 4,
+      "is_active": 1,
+      "created_at": "2026-03-07T01:15:06.098Z"
+    },
+    {
+      "id": 6,
+      "title": "Precision Colour Control",
+      "category": "Quality",
+      "image_url": "/uploads/1772846115427-775442.jpg",
+      "alt_text": "X-Rite spectrodensitometer displaying ΔE colour deviation values on a colour chart",
+      "sort_order": 5,
+      "is_active": 1,
+      "created_at": "2026-03-07T01:15:15.735Z"
+    },
+    {
+      "id": 7,
+      "title": "Corrugated Production Line",
+      "category": "Manufacturing",
+      "image_url": "/uploads/1772846123635-494420.jpg",
+      "alt_text": "Corrugated cardboard sheets moving along the production conveyor line",
+      "sort_order": 6,
+      "is_active": 1,
+      "created_at": "2026-03-07T01:15:23.879Z"
+    },
+    {
+      "id": 9,
+      "title": "Print Quality Inspection",
+      "category": "Quality",
+      "image_url": "/uploads/1772846079856-42696.jpg",
+      "alt_text": "Quality inspector using a loupe to check print registration and colour accuracy",
+      "sort_order": 7,
+      "is_active": 1,
+      "created_at": "2026-03-07T02:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "title": "Print Quality Check",
+      "category": "Quality",
+      "image_url": "/uploads/1772846813059-502390.jpg",
+      "alt_text": "Close-up of a technician inspecting print colour bars with a precision loupe",
+      "sort_order": 8,
+      "is_active": 1,
+      "created_at": "2026-03-07T02:01:00.000Z"
+    }
+  ],
+  "enquiries": [],
+  "site_settings": {
+    "site_title": "Kraftman Packaging - Premium Packaging Manufacturer India",
+    "site_description": "Leading paperboard packaging manufacturer specializing in mono cartons, corrugated packaging, hangtags, and display boxes for FMCG, retail & pharma.",
+    "meta_keywords": "packaging manufacturer India, mono cartons, corrugated packaging, FMCG packaging, retail packaging, pharmaceutical packaging, Haryana packaging",
+    "phone1": "+91-1275-262000",
+    "phone2": "+91-9717002464",
+    "phone3": "+91-9717015111",
+    "email": "info@kraftmanpackaging.com",
+    "address": "Khasra No 69/8/2, Baghola Janoli Link Road, Village Janoli, Palwal, Faridabad, Haryana - 121102, India",
+    "tagline": "Print with Precision | Pack with Pride | Deliver with Trust",
+    "hero_heading": "India's Trusted Packaging Partner",
+    "hero_subheading": "Precision-crafted mono cartons, corrugated solutions & retail packaging for leading FMCG, pharma & consumer brands.",
+    "hero_bg_image": "/uploads/1772776788277-582321.jpg",
+    "about_bg_image": "/uploads/1772776820390-502388.jpg",
+    "about_visual_image": "/uploads/1772777365571-848593.jpg",
+    "capabilities_bg_image": "/uploads/1772777372982-516100.jpg",
+    "site_logo": "/uploads/1772779344915-501979.jpg",
+    "strengths_data": "[{\"label\":\"Strength One\",\"title\":\"Quality Excellence\",\"description\":\"Die-hard determination to serve clients with utmost quality through rigorous standards and continuous improvement at every stage of production.\"},{\"label\":\"Strength Two\",\"title\":\"Professional Team\",\"description\":\"Qualified professionals oriented to examine the minutest details, ensuring no loose ends in manufacturing and quality assurance processes.\"},{\"label\":\"Strength Three\",\"title\":\"Client Trust\",\"description\":\"Our strength is derived from the immense trust clients place in us, built through consistent delivery, reliability, and transparent communication.\"},{\"label\":\"Strength Four\",\"title\":\"Technical Capability\",\"description\":\"Advanced manufacturing infrastructure combined with engineering expertise to deliver complex packaging solutions efficiently and at scale.\"}]",
+    "npd_steps_data": "[{\"number\":\"01\",\"icon\":\"fa-cube\",\"title\":\"Sample Maker\",\"description\":\"Advanced technology for rapid prototyping — quick, accurate physical prototypes with drastic reduction in manual labor and development time.\",\"image_url\":\"\"},{\"number\":\"02\",\"icon\":\"fa-eye\",\"title\":\"3D Rendering\",\"description\":\"Seamless integration using 3D renderings as references for sample maker prototypes — virtual approval before physical production begins.\"},{\"number\":\"03\",\"icon\":\"fa-truck\",\"title\":\"Transit Testing\",\"description\":\"Rigorous testing integrated into the development process — ensuring product safety and durability during transit before launch.\"}]",
+    "npd_data": "[{\"number\":\"01\",\"icon\":\"fa-cube\",\"title\":\"Sample Maker\",\"description\":\"Advanced technology for rapid prototyping — quick, accurate physical prototypes with drastic reduction in manual labor and development time.\",\"image_url\":\"/uploads/1772866245017-815689.jpg\"},{\"number\":\"02\",\"icon\":\"fa-eye\",\"title\":\"3D Rendering\",\"description\":\"Seamless integration using 3D renderings as references for sample maker prototypes — virtual approval before physical production begins.\"},{\"number\":\"03\",\"icon\":\"fa-truck\",\"title\":\"Transit Testing\",\"description\":\"Rigorous testing integrated into the development process — ensuring product safety and durability during transit before launch.\"}]",
+    "npd_bg_image": "/uploads/1772866683380-152120.jpg",
+    "mfg_steps_data": "[{\"step_num\":\"01\",\"icon\":\"fa-pencil-ruler\",\"title\":\"Pre-Press & Design\",\"description\":\"ESKO suite & Artios CAD structural design, 3D rendering & photorealistic visualization, dieline development, ICC color management & preflight, rapid prototyping via sample maker, and Adobe Creative Suite.\",\"features\":[\"ESKO Suite & Artios CAD\",\"3D Rendering & Visualization\",\"ICC Color Management\",\"Rapid Prototyping\"],\"image_url\":\"/uploads/1772778589508-452603.jpg\"},{\"step_num\":\"02\",\"icon\":\"fa-print\",\"title\":\"Precision Printing\",\"description\":\"Heidelberg multicolor offset presses, GMI-compliant color management, X-Rite i1 & PressSign inline monitoring, tight ΔE color control, and 2-color direct corrugated flexo printing.\",\"features\":[\"Heidelberg Offset Presses\",\"GMI-Compliant Color Mgmt\",\"Tight ΔE Color Control\",\"X-Rite i1 Inline Monitoring\"],\"image_url\":\"/uploads/1772778913655-551648.jpg\"},{\"step_num\":\"03\",\"icon\":\"fa-cut\",\"title\":\"Post-Press & Finishing\",\"description\":\"Flatbed die-cutting up to 52\\\"×72\\\", UV & blister coating, folder-gluing with inline QC, window patching, corrugation A/B/C/E flute up to 5-ply, maximum board width 1400mm.\",\"features\":[\"Die-Cutting up to 52\\\"×72\\\"\",\"UV & Blister Coating\",\"A/B/C/E Flute up to 5-Ply\",\"Inline QC Folder-Gluers\"],\"image_url\":\"/uploads/1772778925890-506904.jpg\"}]",
+    "quality_items_data": "[{\"icon\":\"fa-flask\",\"title\":\"Quality Control Laboratory\",\"description\":\"State-of-the-art testing facilities with comprehensive material testing protocols. ISO-compliant procedures for every batch.\"},{\"icon\":\"fa-search\",\"title\":\"Inspection Systems\",\"description\":\"Multi-stage inspection process with automated quality checks and manual verification. Real-time defect detection throughout production.\"},{\"icon\":\"fa-shield-alt\",\"title\":\"Compliance & Standards\",\"description\":\"ISO, BRC, and FSC adherence with regular third-party audits and fully documented Quality Management System.\"},{\"icon\":\"fa-vials\",\"title\":\"Testing Capabilities\",\"description\":\"Burst strength, compression, and durability testing; color consistency verification; transit and drop test simulations.\"},{\"icon\":\"fa-chart-line\",\"title\":\"Continuous Improvement\",\"description\":\"Six Sigma and lean manufacturing methodologies, root cause analysis, and ongoing employee training programs.\"}]",
+    "whyus_items_data": "[{\"icon\":\"fa-cogs\",\"title\":\"Advanced Manufacturing\",\"description\":\"State-of-the-art Heidelberg presses, CTP technology, and automated finishing lines ensure precision, repeatability, and efficiency at scale.\"},{\"icon\":\"fa-check-double\",\"title\":\"GMI-Certified Quality\",\"description\":\"Equipped testing laboratory with rigorous multi-stage quality control at every production phase. Tight ΔE color control across long runs.\"},{\"icon\":\"fa-bolt\",\"title\":\"Reduced Turnaround\",\"description\":\"Sample maker + 3D rendering integration dramatically reduces development cycles. Rapid prototyping with quick physical mock-ups.\"},{\"icon\":\"fa-leaf\",\"title\":\"Sustainability Focus\",\"description\":\"FSC-certified materials, eco-friendly paperboard, and sustainable manufacturing practices throughout every step of production.\"},{\"icon\":\"fa-users\",\"title\":\"Expert Team\",\"description\":\"Qualified professionals in design, engineering, quality control, and customer service — detail-oriented at every stage.\"},{\"icon\":\"fa-handshake\",\"title\":\"Client Partnership\",\"description\":\"Collaborative approach with a proven track record delivering customized solutions that meet specific client requirements and brand standards.\"}]",
+    "npd_video_url": "",
+    "strengths_bg_image": "/uploads/1772776820390-502388.jpg",
+    "manufacturing_bg_image": "",
+    "products_bg_image": "",
+    "quality_bg_image": "",
+    "clients_bg_image": "",
+    "whyus_bg_image": "",
+    "certifications_bg_image": "",
+    "contact_bg_image": "/uploads/1772885189822-713777.jpg"
+  },
+  "testimonials": [],
+  "_counters": {
+    "admins": 1,
+    "products": 16,
+    "gallery": 10,
+    "enquiries": 0,
+    "testimonials": 0,
+    "certifications": 4,
+    "clients": 4,
+    "capabilities": 4
+  },
+  "clients": [
+    {
+      "id": 1,
+      "name": "Target",
+      "logo_url": "/uploads/1772786499617-788761.jpg",
+      "website": "",
+      "industry": "",
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-03-06T08:41:39.674Z",
+      "updated_at": "2026-03-06T08:41:39.674Z"
+    },
+    {
+      "id": 2,
+      "name": "Walmart",
+      "logo_url": "/uploads/1772786724080-486054.jpg",
+      "website": "",
+      "industry": "",
+      "sort_order": 0,
+      "is_active": 1,
+      "created_at": "2026-03-06T08:45:24.091Z",
+      "updated_at": "2026-03-06T08:45:24.091Z"
+    }
+  ],
+  "certifications": [
+    {
+      "id": 1,
+      "title": "SEDEX",
+      "body": "Our manufacturing processes meet international quality management standards ensuring consistent product quality.",
+      "image_url": "/uploads/1772786391636-81938.jpg",
+      "badge_icon": "fa-certificate",
+      "sort_order": 2,
+      "is_active": 1,
+      "created_at": "2026-02-27T16:18:02.219Z",
+      "updated_at": "2026-03-06T08:39:51.669Z"
+    },
+    {
+      "id": 2,
+      "title": "FSC Certified",
+      "body": "Forest Stewardship Council certified materials ensuring responsible sourcing and eco-friendly supply chain.",
+      "image_url": "/uploads/1772786347747-596656.jpg",
+      "badge_icon": "fa-leaf",
+      "sort_order": 3,
+      "is_active": 1,
+      "created_at": "2026-02-27T16:18:02.219Z",
+      "updated_at": "2026-03-06T08:39:57.766Z"
+    },
+    {
+      "id": 3,
+      "title": "GMI Certified",
+      "body": "G7 Master Qualification for colour accuracy and brand consistency across all print runs.",
+      "image_url": "/uploads/1772779637447-558509.jpg",
+      "badge_icon": "fa-award",
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-02-27T16:18:02.219Z",
+      "updated_at": "2026-03-06T08:40:02.300Z"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": 1,
+      "title": "Pre-Press & Design",
+      "description": "Adobe suite & Artios CAD structural design, 3D rendering & photorealistic visualization, dieline development, ICC color management & preflight.",
+      "icon": "fa-pencil-ruler",
+      "image_url": "/uploads/1772778589508-452603.jpg",
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-03-06T06:20:25.399Z",
+      "updated_at": "2026-03-07T05:38:56.463Z"
+    },
+    {
+      "id": 2,
+      "title": "Precision Printing",
+      "description": "Heidelberg multicolor offset presses, GMI-compliant color management, X-Rite i1 inline monitoring, tight ΔE control, direct flexo for corrugated.",
+      "icon": "fa-print",
+      "image_url": "/uploads/1772778913655-551648.jpg",
+      "sort_order": 2,
+      "is_active": 1,
+      "created_at": "2026-03-06T06:20:25.399Z",
+      "updated_at": "2026-03-06T06:35:13.859Z"
+    },
+    {
+      "id": 3,
+      "title": "Post-Press & Finishing",
+      "description": "Flatbed die-cutting up to 52\"×72\", UV & blister coating, folder-gluing with inline QC, window patching, corrugation A/B/C/E flute up to 5-ply.",
+      "icon": "fa-cut",
+      "image_url": "/uploads/1772778925890-506904.jpg",
+      "sort_order": 3,
+      "is_active": 1,
+      "created_at": "2026-03-06T06:20:25.399Z",
+      "updated_at": "2026-03-06T06:35:26.061Z"
+    },
+    {
+      "id": 4,
+      "title": "Quality Assurance",
+      "description": "Multi-stage inspection, burst strength & compression testing, transit & drop simulation, ISO / BRC / FSC compliance, Six Sigma & lean manufacturing.",
+      "icon": "fa-shield-alt",
+      "image_url": "/uploads/1772846079856-42696.jpg",
+      "sort_order": 4,
+      "is_active": 1,
+      "created_at": "2026-03-06T06:20:25.399Z",
+      "updated_at": "2026-03-07T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,6 +1,4 @@
 node_modules/
 .env
-public/uploads/*
-!public/uploads/.gitkeep
-data/db.json
 *.log
+.DS_Store
