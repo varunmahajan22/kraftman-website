@@ -121,6 +121,50 @@ sudo certbot renew --dry-run
 - Click "ERP Portal" link in website nav — should open ERP in new tab
 - Visit `https://kraftmanpackaging.com/health` — should return OK
 
+## FSC Content — Temporarily Withheld
+
+FSC claims were taken off the site on **2026-09-03** for 20 days
+(restore on or after **2026-09-23**). Nothing was deleted — the FSC
+certification record is only deactivated.
+
+### Routine deploy (keeps live data)
+
+`data/db.json` is tracked in git *but is also written at runtime* by the
+admin panel. Never let a pull overwrite it, or you lose enquiries.
+
+```bash
+cd /var/www/kraftman-website
+cp data/db.json ~/db.json.backup
+git fetch origin
+git checkout -- data/db.json        # discard local; the backup has it
+git merge --ff-only origin/main     # fast-forward code only
+cp ~/db.json.backup data/db.json    # put live data back
+node scripts/toggle-fsc.js off      # apply the data change to live data
+pm2 restart kraftman-website
+```
+
+### Restoring FSC (~2026-09-23)
+
+Two halves — the database, then the static badges.
+
+```bash
+# 1. Database (live server)
+cd /var/www/kraftman-website
+node scripts/toggle-fsc.js on
+
+# 2. Static markup — revert the code commit, keeping live data untouched
+git revert --no-commit e824146
+git checkout HEAD -- data/db.json   # revert code only, not the database
+git commit -m "Restore FSC certification references"
+
+pm2 restart kraftman-website
+```
+
+Then purge the Cloudflare cache — the badges sit in static HTML.
+
+Both directions are idempotent and back up the database before writing.
+Use `--dry-run` to preview.
+
 ## Useful PM2 Commands
 
 ```bash
