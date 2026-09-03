@@ -225,7 +225,8 @@
     "testimonials": 0,
     "certifications": 4,
     "clients": 4,
-    "capabilities": 4
+    "capabilities": 4,
+    "cert_badges": 4
   },
   "clients": [
     {
@@ -330,6 +331,52 @@
       "is_active": 1,
       "created_at": "2026-03-06T06:20:25.399Z",
       "updated_at": "2026-03-07T00:00:00.000Z"
+    }
+  ],
+  "cert_badges": [
+    {
+      "id": 1,
+      "label": "ISO Compliant",
+      "icon": "fa-certificate",
+      "show_hero": 1,
+      "show_about": 1,
+      "sort_order": 1,
+      "is_active": 1,
+      "created_at": "2026-09-03T11:30:45.613Z",
+      "updated_at": "2026-09-03T11:30:45.613Z"
+    },
+    {
+      "id": 2,
+      "label": "FSC Certified",
+      "icon": "fa-leaf",
+      "show_hero": 1,
+      "show_about": 1,
+      "sort_order": 2,
+      "is_active": 0,
+      "created_at": "2026-09-03T11:30:45.613Z",
+      "updated_at": "2026-09-03T11:41:48.246Z"
+    },
+    {
+      "id": 3,
+      "label": "BRC Standards",
+      "icon": "fa-shield-alt",
+      "show_hero": 0,
+      "show_about": 1,
+      "sort_order": 3,
+      "is_active": 1,
+      "created_at": "2026-09-03T11:30:45.613Z",
+      "updated_at": "2026-09-03T11:30:45.613Z"
+    },
+    {
+      "id": 4,
+      "label": "GMI Certified",
+      "icon": "fa-check-circle",
+      "show_hero": 1,
+      "show_about": 1,
+      "sort_order": 4,
+      "is_active": 1,
+      "created_at": "2026-09-03T11:30:45.613Z",
+      "updated_at": "2026-09-03T11:30:45.613Z"
     }
   ]
 }

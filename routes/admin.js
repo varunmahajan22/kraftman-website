@@ -239,6 +239,43 @@ router.delete('/certifications/:id', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+// ─── CERT BADGES ─────────────────────────────────────────────────────────────────
+router.get('/cert-badges', requireAuth, (req, res) => {
+  try { res.json(db.getCertBadges(false)); }
+  catch { res.status(500).json({ error: 'Failed' }); }
+});
+
+router.post('/cert-badges', requireAuth, (req, res) => {
+  const { label, icon, show_hero, show_about, sort_order, is_active } = req.body;
+  if (!label) return res.status(400).json({ error: 'Label required' });
+  const item = db.createCertBadge({
+    label,
+    icon: icon || 'fa-certificate',
+    show_hero, show_about, is_active,
+    sort_order: parseInt(sort_order) || 0,
+  });
+  res.json({ success: true, id: item.id, item });
+});
+
+router.put('/cert-badges/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const existing = db.getCertBadges(false).find(b => b.id === parseInt(id));
+  if (!existing) return res.status(404).json({ error: 'Badge not found' });
+  const { label, icon, show_hero, show_about, sort_order, is_active } = req.body;
+  db.updateCertBadge(id, {
+    label: label || existing.label,
+    icon: icon || existing.icon,
+    show_hero, show_about, is_active,
+    sort_order: sort_order !== undefined ? parseInt(sort_order) : existing.sort_order,
+  });
+  res.json({ success: true });
+});
+
+router.delete('/cert-badges/:id', requireAuth, (req, res) => {
+  db.deleteCertBadge(req.params.id);
+  res.json({ success: true });
+});
+
 // ─── CAPABILITIES ────────────────────────────────────────────────────────────────
 router.get('/capabilities', requireAuth, (req, res) => {
   try { res.json(db.getCapabilities(false)); }

@@ -438,6 +438,44 @@ function renderCertifications(certs) {
 
 loadCertifications();
 
+/* ── CERT BADGES ─────────────────────────────────────────────────── */
+/* The small pills in the hero and About sections. Managed from
+   Admin -> Cert Badges. Fallback deliberately omits any claim that is
+   currently withheld, so an API hiccup can never put one back on the page. */
+const CERT_BADGE_DEFAULTS = [
+  { sort_order:1, icon:'fa-certificate',  label:'ISO Compliant', show_hero:1, show_about:1 },
+  { sort_order:3, icon:'fa-shield-alt',   label:'BRC Standards', show_hero:0, show_about:1 },
+  { sort_order:4, icon:'fa-check-circle', label:'GMI Certified', show_hero:1, show_about:1 },
+];
+
+const heroCertBadges  = document.getElementById('heroCertBadges');
+const aboutCertBadges = document.getElementById('aboutCertBadges');
+
+async function loadCertBadges() {
+  let badges = CERT_BADGE_DEFAULTS;
+  try {
+    const res = await fetch('/api/cert-badges');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) badges = data;
+    }
+  } catch (e) { /* keep defaults */ }
+  renderCertBadges(badges);
+}
+
+function renderCertBadges(badges) {
+  const paint = (el, cls, list) => {
+    if (!el) return;
+    el.innerHTML = list.map(b =>
+      `<span class="${cls}"><i class="fa ${escHtml(b.icon || 'fa-certificate')}"></i> ${escHtml(b.label)}</span>`
+    ).join('');
+  };
+  paint(heroCertBadges,  'hero-cert-badge', badges.filter(b => b.show_hero));
+  paint(aboutCertBadges, 'cert-pill',       badges.filter(b => b.show_about));
+}
+
+loadCertBadges();
+
 /* ── CAPABILITIES ────────────────────────────────────────────────── */
 const CAPABILITY_DEFAULTS = [
   { sort_order:1, icon:'fa-pencil-ruler', title:'Pre-Press & Design',    description:'ESKO suite & Artios CAD structural design, 3D rendering & photorealistic visualization, dieline development, ICC color management & preflight.' },

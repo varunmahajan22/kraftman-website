@@ -21,8 +21,9 @@ const defaultDB = {
   testimonials: [],
   clients: [],
   certifications: [],
+  cert_badges: [],
   capabilities: [],
-  _counters: { admins: 0, products: 0, gallery: 0, enquiries: 0, testimonials: 0, clients: 0, certifications: 0, capabilities: 0 }
+  _counters: { admins: 0, products: 0, gallery: 0, enquiries: 0, testimonials: 0, clients: 0, certifications: 0, cert_badges: 0, capabilities: 0 }
 };
 
 /* ── LOAD / SAVE ─────────────────────────────────────────────────── */
@@ -41,7 +42,7 @@ let db = load();
 Object.keys(defaultDB).forEach(k => { if (db[k] === undefined) db[k] = defaultDB[k]; });
 
 // ── MIGRATIONS: repair counters and null ids from old db format ───
-const allTables = ['admins', 'products', 'gallery', 'enquiries', 'testimonials', 'clients', 'certifications', 'capabilities'];
+const allTables = ['admins', 'products', 'gallery', 'enquiries', 'testimonials', 'clients', 'certifications', 'cert_badges', 'capabilities'];
 allTables.forEach(table => {
   if (!db._counters[table] || isNaN(db._counters[table])) {
     // Rebuild counter from the actual max id in the array
@@ -104,6 +105,23 @@ if (!db.certifications.length) {
   certs.forEach(c => {
     db._counters.certifications++;
     db.certifications.push({ id: db._counters.certifications, ...c, created_at: now, updated_at: now });
+  });
+}
+
+// Seed default certification badges (the small pills in the hero and About
+// sections). Separate from `certifications` because the badge set and the
+// card set differ. FSC ships inactive — it is withheld until ~2026-09-23.
+if (!db.cert_badges.length) {
+  const now = new Date().toISOString();
+  const badges = [
+    { label: 'ISO Compliant', icon: 'fa-certificate',  show_hero: 1, show_about: 1, sort_order: 1, is_active: 1 },
+    { label: 'FSC Certified', icon: 'fa-leaf',         show_hero: 1, show_about: 1, sort_order: 2, is_active: 0 },
+    { label: 'BRC Standards', icon: 'fa-shield-alt',   show_hero: 0, show_about: 1, sort_order: 3, is_active: 1 },
+    { label: 'GMI Certified', icon: 'fa-check-circle', show_hero: 1, show_about: 1, sort_order: 4, is_active: 1 },
+  ];
+  badges.forEach(b => {
+    db._counters.cert_badges++;
+    db.cert_badges.push({ id: db._counters.cert_badges, ...b, created_at: now, updated_at: now });
   });
 }
 
@@ -359,6 +377,54 @@ const orm = {
     db = load();
     const item = db.certifications.find(c => c.id === parseInt(id));
     db.certifications = db.certifications.filter(c => c.id !== parseInt(id));
+    save(db);
+    return item;
+  },
+
+  // Certification badges
+  getCertBadges: (onlyActive = false) => {
+    db = load();
+    let items = [...db.cert_badges];
+    if (onlyActive) items = items.filter(b => b.is_active);
+    return items.sort((a, b) => a.sort_order - b.sort_order || a.id - b.id);
+  },
+  createCertBadge: (data) => {
+    db = load();
+    db._counters.cert_badges++;
+    const item = {
+      id: db._counters.cert_badges,
+      ...data,
+      show_hero:  data.show_hero  !== undefined ? parseInt(data.show_hero)  : 1,
+      show_about: data.show_about !== undefined ? parseInt(data.show_about) : 1,
+      is_active:  data.is_active  !== undefined ? parseInt(data.is_active)  : 1,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    db.cert_badges.push(item);
+    save(db);
+    return item;
+  },
+  updateCertBadge: (id, data) => {
+    db = load();
+    const idx = db.cert_badges.findIndex(b => b.id === parseInt(id));
+    if (idx === -1) return null;
+    const cur = db.cert_badges[idx];
+    db.cert_badges[idx] = {
+      ...cur,
+      ...data,
+      id: parseInt(id),
+      show_hero:  data.show_hero  !== undefined ? parseInt(data.show_hero)  : cur.show_hero,
+      show_about: data.show_about !== undefined ? parseInt(data.show_about) : cur.show_about,
+      is_active:  data.is_active  !== undefined ? parseInt(data.is_active)  : cur.is_active,
+      updated_at: new Date().toISOString(),
+    };
+    save(db);
+    return db.cert_badges[idx];
+  },
+  deleteCertBadge: (id) => {
+    db = load();
+    const item = db.cert_badges.find(b => b.id === parseInt(id));
+    db.cert_badges = db.cert_badges.filter(b => b.id !== parseInt(id));
     save(db);
     return item;
   },

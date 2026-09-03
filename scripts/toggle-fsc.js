@@ -60,7 +60,16 @@ for (const cert of db.certifications || []) {
   }
 }
 
-// 2. Copy rewrites across capabilities and site settings.
+// 2. Show or hide the FSC hero/About badge pill.
+for (const badge of db.cert_badges || []) {
+  if (/fsc/i.test(badge.label) && badge.is_active !== targetActive) {
+    badge.is_active = targetActive;
+    badge.updated_at = new Date().toISOString();
+    changes.push(`badge "${badge.label}" -> is_active: ${targetActive}`);
+  }
+}
+
+// 3. Copy rewrites across capabilities and site settings.
 const rewrite = (value, label) => {
   if (typeof value !== 'string') return value;
   let out = value;
@@ -81,7 +90,7 @@ for (const [key, value] of Object.entries(db.site_settings || {})) {
   db.site_settings[key] = rewrite(value, `site_settings.${key}`);
 }
 
-// 3. Report and save.
+// 4. Report and save.
 const verb = hiding ? 'hidden' : 'restored';
 
 if (!changes.length) {

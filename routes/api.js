@@ -49,6 +49,12 @@ router.get('/certifications', (req, res) => {
   catch { res.status(500).json({ error: 'Failed to load certifications' }); }
 });
 
+// GET /api/cert-badges
+router.get('/cert-badges', (req, res) => {
+  try { res.json(db.getCertBadges(true)); }
+  catch { res.status(500).json({ error: 'Failed to load cert badges' }); }
+});
+
 // GET /api/capabilities
 router.get('/capabilities', (req, res) => {
   try { res.json(db.getCapabilities(true)); }

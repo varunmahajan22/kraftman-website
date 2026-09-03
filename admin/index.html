@@ -277,6 +277,7 @@
         <button class="sidebar-link" data-page="gallery"><i class="fa fa-images"></i> Gallery</button>
         <button class="sidebar-link" data-page="clients"><i class="fa fa-handshake"></i> Client Logos</button>
         <button class="sidebar-link" data-page="certifications"><i class="fa fa-certificate"></i> Certifications</button>
+        <button class="sidebar-link" data-page="certbadges"><i class="fa fa-ribbon"></i> Cert Badges</button>
         <button class="sidebar-link" data-page="capabilities"><i class="fa fa-cogs"></i> Capabilities</button>
         <button class="sidebar-link" data-page="sections"><i class="fa fa-layer-group"></i> Page Sections</button>
         <div class="nav-section-label">Leads</div>
@@ -373,6 +374,21 @@
           <table>
             <thead><tr><th>Image</th><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="certsTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CERT BADGES -->
+      <div class="page" id="page-certbadges">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa fa-ribbon"></i> Certification Badges</div>
+            <button class="btn btn-primary" onclick="openBadgeModal()"><i class="fa fa-plus"></i> Add Badge</button>
+          </div>
+          <p style="padding:0 0 12px;color:var(--text-dim);font-size:.85rem;">The small pills shown in the hero banner and the About section. Set a badge to <b>Hidden</b> to take it off the website without deleting it.</p>
+          <table>
+            <thead><tr><th>Icon</th><th>Label</th><th>Hero</th><th>About</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="badgesTable"><tr><td colspan="7" class="empty-state">Loading…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -972,10 +988,11 @@ function showPage(page) {
   document.querySelectorAll('.sidebar-link[data-page]').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + page)?.classList.add('active');
   document.querySelector(`.sidebar-link[data-page="${page}"]`)?.classList.add('active');
-  const titles = { dashboard:'Dashboard', products:'Products', gallery:'Gallery', clients:'Client Logos', certifications:'Certifications & Nominations', capabilities:'Capabilities', sections:'Page Sections', enquiries:'Enquiries', settings:'Site Settings', upload:'Upload Images', password:'Change Password' };
+  const titles = { dashboard:'Dashboard', products:'Products', gallery:'Gallery', clients:'Client Logos', certifications:'Certifications & Nominations', certbadges:'Certification Badges', capabilities:'Capabilities', sections:'Page Sections', enquiries:'Enquiries', settings:'Site Settings', upload:'Upload Images', password:'Change Password' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
   if (page === 'clients') loadClients();
   if (page === 'certifications') loadCertifications();
+  if (page === 'certbadges') loadCertBadges();
   if (page === 'capabilities') loadCapabilities();
   if (page === 'sections') loadSectionsPage();
 }
@@ -1343,6 +1360,115 @@ function previewClientLogo(input) {
     pr.src = URL.createObjectURL(input.files[0]);
     pr.style.display = 'block';
   }
+}
+
+/* ─── CERT BADGES ─────────────────────────────────────── */
+let certBadges = [];
+async function loadCertBadges() {
+  const tbody = document.getElementById('badgesTable');
+  try {
+    const res = await fetch('/admin/api/cert-badges', { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (!res.ok || !Array.isArray(data)) {
+      // Never render an auth/server failure as "no badges" — that reads as data loss.
+      const msg = res.status === 401 || res.status === 403
+        ? 'Session expired — please sign in again.'
+        : (data && data.error) || 'Could not load badges.';
+      if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${esc(msg)}</td></tr>`;
+      toast('error', msg);
+      return;
+    }
+    certBadges = data;
+    renderBadgesTable(certBadges);
+  } catch {
+    if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Network error — could not load badges.</td></tr>';
+    toast('error', 'Failed to load badges');
+  }
+}
+function renderBadgesTable(items) {
+  const tbody = document.getElementById('badgesTable');
+  if (!tbody) return;
+  if (!items.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No badges yet. Add your first.</td></tr>'; return; }
+  const tick = on => on
+    ? '<i class="fa fa-check" style="color:var(--accent)"></i>'
+    : '<i class="fa fa-minus" style="color:var(--text-dim)"></i>';
+  tbody.innerHTML = items.map(b => `<tr>
+    <td><i class="fa ${esc(b.icon||'fa-certificate')}" style="font-size:1.3rem;color:var(--accent);"></i></td>
+    <td><b>${esc(b.label)}</b></td>
+    <td>${tick(b.show_hero)}</td>
+    <td>${tick(b.show_about)}</td>
+    <td>${b.sort_order ?? 0}</td>
+    <td><span class="badge-status ${b.is_active?'active':'inactive'}">${b.is_active?'Active':'Hidden'}</span></td>
+    <td>
+      <button class="btn btn-secondary btn-sm" onclick="toggleBadge(${b.id})">${b.is_active?'Hide':'Show'}</button>
+      <button class="btn btn-secondary btn-sm" onclick="openBadgeModal(${b.id})">Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteBadge(${b.id})">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+async function toggleBadge(id) {
+  const b = certBadges.find(x => x.id === id);
+  if (!b) return;
+  try {
+    const res = await fetch(`/admin/api/cert-badges/${id}`, {
+      method: 'PUT', headers: getHeaders(),
+      body: JSON.stringify({ is_active: b.is_active ? 0 : 1 })
+    });
+    if (res.ok) { toast('success', b.is_active ? 'Badge hidden' : 'Badge shown'); loadCertBadges(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+  } catch { toast('error', 'Network error'); }
+}
+let editingBadgeId = null;
+function openBadgeModal(id) {
+  editingBadgeId = id || null;
+  const b = id ? certBadges.find(x => x.id === id) : null;
+  const icons = ['fa-certificate','fa-award','fa-leaf','fa-shield-alt','fa-check-circle','fa-star','fa-trophy','fa-medal','fa-ribbon'];
+  const sel = (v, on) => v === on ? 'selected' : '';
+  showModal(id ? 'Edit Badge' : 'Add Certification Badge', `
+    <form id="badgeForm" onsubmit="saveBadge(event)">
+      <div class="fg2"><label>Label *</label>
+        <input name="label" value="${esc(b?.label||'')}" required placeholder="e.g. ISO Compliant" /></div>
+      <div class="fg-row">
+        <div class="fg2"><label>Icon</label>
+          <select name="icon">${icons.map(ic => `<option value="${ic}" ${(b?.icon||'fa-certificate')===ic?'selected':''}>${ic}</option>`).join('')}</select></div>
+        <div class="fg2"><label>Sort Order</label>
+          <input name="sort_order" type="number" value="${b?.sort_order??0}" /></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg2"><label>Show in Hero</label>
+          <select name="show_hero"><option value="1" ${sel(b?b.show_hero:1,1)}>Yes</option><option value="0" ${b&&!b.show_hero?'selected':''}>No</option></select></div>
+        <div class="fg2"><label>Show in About</label>
+          <select name="show_about"><option value="1" ${sel(b?b.show_about:1,1)}>Yes</option><option value="0" ${b&&!b.show_about?'selected':''}>No</option></select></div>
+      </div>
+      <div class="fg2"><label>Status</label>
+        <select name="is_active"><option value="1" ${(!b||b.is_active)?'selected':''}>Active</option><option value="0" ${b&&!b.is_active?'selected':''}>Hidden</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDynModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+      </div>
+    </form>
+  `);
+}
+async function saveBadge(e) {
+  e.preventDefault();
+  const payload = Object.fromEntries(new FormData(e.target));
+  const url = editingBadgeId ? `/admin/api/cert-badges/${editingBadgeId}` : '/admin/api/cert-badges';
+  try {
+    const res = await fetch(url, {
+      method: editingBadgeId ? 'PUT' : 'POST',
+      headers: getHeaders(), body: JSON.stringify(payload)
+    });
+    if (res.ok) { closeDynModal(); toast('success', editingBadgeId ? 'Badge updated' : 'Badge added'); loadCertBadges(); }
+    else { const d = await res.json(); toast('error', d.error || 'Failed'); }
+  } catch { toast('error', 'Network error'); }
+}
+async function deleteBadge(id) {
+  if (!confirm('Delete this badge? Use Hide instead if you may want it back.')) return;
+  try {
+    const res = await fetch(`/admin/api/cert-badges/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+    if (res.ok) { toast('success', 'Deleted'); loadCertBadges(); }
+    else toast('error', 'Failed to delete');
+  } catch { toast('error', 'Network error'); }
 }
 
 /* ─── CERTIFICATIONS ──────────────────────────────────── */
