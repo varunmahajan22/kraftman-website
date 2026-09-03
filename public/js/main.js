@@ -443,7 +443,7 @@ const CAPABILITY_DEFAULTS = [
   { sort_order:1, icon:'fa-pencil-ruler', title:'Pre-Press & Design',    description:'ESKO suite & Artios CAD structural design, 3D rendering & photorealistic visualization, dieline development, ICC color management & preflight.' },
   { sort_order:2, icon:'fa-print',        title:'Precision Printing',     description:'Heidelberg multicolor offset presses, GMI-compliant color management, X-Rite i1 inline monitoring, tight ΔE control, direct flexo for corrugated.' },
   { sort_order:3, icon:'fa-cut',          title:'Post-Press & Finishing', description:'Flatbed die-cutting up to 52"×72", UV & blister coating, folder-gluing with inline QC, window patching, corrugation A/B/C/E flute up to 5-ply.' },
-  { sort_order:4, icon:'fa-shield-alt',   title:'Quality Assurance',      description:'Multi-stage inspection, burst strength & compression testing, transit & drop simulation, ISO / BRC / FSC compliance, Six Sigma & lean manufacturing.' }
+  { sort_order:4, icon:'fa-shield-alt',   title:'Quality Assurance',      description:'Multi-stage inspection, burst strength & compression testing, transit & drop simulation, ISO / BRC compliance, Six Sigma & lean manufacturing.' }
 ];
 
 async function loadCapabilities() {
@@ -681,7 +681,7 @@ function renderSectionQuality(s) {
   const defaults = [
     { icon: 'fa-flask', title: 'Quality Control Laboratory', description: 'State-of-the-art testing facilities with comprehensive material testing protocols. ISO-compliant procedures for every batch.' },
     { icon: 'fa-search', title: 'Inspection Systems', description: 'Multi-stage inspection process with automated quality checks and manual verification. Real-time defect detection throughout production.' },
-    { icon: 'fa-shield-alt', title: 'Compliance & Standards', description: 'ISO, BRC, and FSC adherence with regular third-party audits and fully documented Quality Management System.' },
+    { icon: 'fa-shield-alt', title: 'Compliance & Standards', description: 'ISO and BRC adherence with regular third-party audits and fully documented Quality Management System.' },
     { icon: 'fa-vials', title: 'Testing Capabilities', description: 'Burst strength, compression, and durability testing; color consistency verification; transit and drop test simulations.' },
     { icon: 'fa-chart-line', title: 'Continuous Improvement', description: 'Six Sigma and lean manufacturing methodologies, root cause analysis, and ongoing employee training programs.' }
   ];
@@ -701,7 +701,7 @@ function renderSectionWhyUs(s) {
     { icon: 'fa-cogs', title: 'Advanced Manufacturing', description: 'State-of-the-art Heidelberg presses, CTP technology, and automated finishing lines ensure precision, repeatability, and efficiency at scale.' },
     { icon: 'fa-check-double', title: 'GMI-Certified Quality', description: 'Equipped testing laboratory with rigorous multi-stage quality control at every production phase. Tight ΔE color control across long runs.' },
     { icon: 'fa-bolt', title: 'Reduced Turnaround', description: 'Sample maker + 3D rendering integration dramatically reduces development cycles. Rapid prototyping with quick physical mock-ups.' },
-    { icon: 'fa-leaf', title: 'Sustainability Focus', description: 'FSC-certified materials, eco-friendly paperboard, and sustainable manufacturing practices throughout every step of production.' },
+    { icon: 'fa-leaf', title: 'Sustainability Focus', description: 'Eco-friendly paperboard, responsibly sourced materials, and sustainable manufacturing practices throughout every step of production.' },
     { icon: 'fa-users', title: 'Expert Team', description: 'Qualified professionals in design, engineering, quality control, and customer service — detail-oriented at every stage.' },
     { icon: 'fa-handshake', title: 'Client Partnership', description: 'Collaborative approach with a proven track record delivering customized solutions that meet specific client requirements and brand standards.' }
   ];
