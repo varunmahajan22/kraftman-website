@@ -2,3 +2,7 @@ node_modules/
 .env
 *.log
 .DS_Store
+
+# Runtime maintenance-mode toggle — must never be committed, or a deploy
+# would silently put the live site into "Under Renewal".
+data/maintenance.flag

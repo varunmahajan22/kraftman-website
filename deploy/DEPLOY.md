@@ -165,6 +165,37 @@ Then purge the Cloudflare cache — the badges sit in static HTML.
 Both directions are idempotent and back up the database before writing.
 Use `--dry-run` to preview.
 
+## Maintenance Mode ("Under Renewal")
+
+Serves `public/maintenance.html` in place of the website. Affects
+**kraftmanpackaging.com only** — the ERP is a separate app on port 3001
+and is additionally guarded in code by an `erp.*` hostname bypass.
+
+```bash
+cd /var/www/kraftman-website
+touch data/maintenance.flag          # site -> "Under Renewal"
+rm    data/maintenance.flag          # site -> back to normal
+```
+
+No restart and no code change; the flag is checked per request. Setting
+`MAINTENANCE_MODE=true` in `.env` forces it on regardless of the flag.
+
+Still reachable while the site is down, by design:
+
+| Path | Why |
+|------|-----|
+| `/admin`, `/admin/api` | so the site can still be managed and the flag cleared |
+| `/health` | uptime monitoring |
+| `/uploads`, `/css`, `/images` | assets the maintenance page itself uses |
+
+The page returns **503 with `Retry-After: 3600`** rather than 200. That is
+the correct signal for a temporary outage — search engines hold existing
+rankings instead of indexing the notice or dropping the pages. Do not add
+a `noindex` meta tag to it; with a 503 that risks deindexing the site if
+the outage runs long.
+
+The flag file is gitignored, so it never travels with a deploy.
+
 ## Useful PM2 Commands
 
 ```bash

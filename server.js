@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -40,6 +41,42 @@ app.use('/admin/api/login', generalLimit);
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ─── MAINTENANCE MODE ──────────────────────────────────────────────────────────
+// Serves public/maintenance.html instead of the site. Toggle it by creating or
+// removing data/maintenance.flag — no restart, no code change:
+//   touch data/maintenance.flag   → site shows "Under Renewal"
+//   rm    data/maintenance.flag   → site back to normal
+// MAINTENANCE_MODE=true in .env forces it on regardless of the flag file.
+const MAINTENANCE_FLAG = path.join(__dirname, 'data', 'maintenance.flag');
+
+function maintenanceOn() {
+  if (String(process.env.MAINTENANCE_MODE).toLowerCase() === 'true') return true;
+  try { return fs.existsSync(MAINTENANCE_FLAG); } catch { return false; }
+}
+
+// Stays reachable while the site is down: the admin panel (so the site can
+// still be managed and the flag cleared), health checks, and the assets the
+// maintenance page itself needs.
+const MAINTENANCE_ALLOW = /^\/(admin|health|uploads|css|images|favicon|robots\.txt)/;
+
+// Maintenance mode is for kraftmanpackaging.com ONLY. The ERP is a separate
+// Next.js app on port 3001 and is already out of reach of this middleware, but
+// this guard makes that a code guarantee rather than an nginx-config one: any
+// request arriving with an ERP hostname is passed straight through.
+const ERP_HOSTS = /^erp\./i;
+
+app.use((req, res, next) => {
+  const host = (req.hostname || '').toLowerCase();
+  if (ERP_HOSTS.test(host)) return next();
+  if (!maintenanceOn() || MAINTENANCE_ALLOW.test(req.path)) return next();
+  // 503 + Retry-After is the correct signal for a temporary outage: search
+  // engines hold the existing rankings instead of dropping the pages.
+  res.status(503);
+  res.setHeader('Retry-After', '3600');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  return res.sendFile(path.join(__dirname, 'public', 'maintenance.html'));
+});
 
 // Static files — HTML never cached, assets cached 7 days
 app.use(express.static(path.join(__dirname, 'public'), {

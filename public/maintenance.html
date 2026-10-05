@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Under Renewal — Kraftman Packaging</title>
+  <meta name="description" content="The Kraftman Packaging website is temporarily under renewal. Our team is operating as normal — please reach us by phone or email." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --navy:   #0F1C2E;
+      --gold:   #C8860A;
+      --white:  #FFFFFF;
+      --muted:  #94A3B8;
+      --border: rgba(255, 255, 255, .12);
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-body:    'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+      background: var(--navy);
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(200, 134, 10, .10), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(200, 134, 10, .07), transparent 45%);
+      font-family: var(--font-body);
+      color: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { width: 100%; max-width: 680px; text-align: center; }
+
+    /* ── Brand ───────────────────────────────────────────── */
+    .brand { margin-bottom: 40px; }
+    /* The logo asset is a JPG on white, so it sits in a deliberate white
+       badge rather than floating as a bare rectangle on the navy. */
+    .brand img {
+      height: 52px;
+      width: auto;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--white);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .28);
+    }
+    .brand-text {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .brand-text span { color: var(--gold); }
+
+    /* ── Status ──────────────────────────────────────────── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 18px;
+      margin-bottom: 26px;
+      border: 1px solid rgba(200, 134, 10, .35);
+      border-radius: 999px;
+      background: rgba(200, 134, 10, .10);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(1.9rem, 5.5vw, 2.9rem);
+      line-height: 1.18;
+      margin-bottom: 18px;
+    }
+
+    .lede {
+      font-size: 1.04rem;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 14px;
+    }
+    .lede strong { color: var(--white); font-weight: 600; }
+
+    .rule {
+      width: 54px; height: 3px;
+      margin: 34px auto;
+      border-radius: 2px;
+      background: var(--gold);
+    }
+
+    /* ── Contact ─────────────────────────────────────────── */
+    .contact-label {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .card {
+      padding: 18px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .04);
+      text-align: left;
+    }
+    .card-label {
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .card a, .card p {
+      display: block;
+      font-size: .95rem;
+      line-height: 1.6;
+      color: var(--white);
+      text-decoration: none;
+      word-break: break-word;
+    }
+    .card a:hover { color: var(--gold); }
+
+    .address {
+      font-size: .86rem;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 480px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .card { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+
+    <div class="brand">
+      <!-- Falls back to a text wordmark if the logo asset is unavailable. -->
+      <img src="/uploads/1772779344915-501979.jpg" alt="Kraftman Packaging"
+           onerror="this.outerHTML='&lt;div class=&quot;brand-text&quot;&gt;Kraftman &lt;span&gt;Packaging&lt;/span&gt;&lt;/div&gt;'" />
+    </div>
+
+    <div class="pill"><span class="dot"></span> Under Renewal</div>
+
+    <h1>Our website is being renewed</h1>
+
+    <p class="lede">
+      We are refreshing kraftmanpackaging.com and will be back online shortly.
+    </p>
+    <p class="lede">
+      <strong>Our operations are running as normal.</strong> Production, dispatch and
+      order enquiries are entirely unaffected — please reach us directly.
+    </p>
+
+    <div class="rule"></div>
+
+    <p class="contact-label">Get in touch</p>
+
+    <div class="contact-grid">
+      <div class="card">
+        <div class="card-label">Phone</div>
+        <a href="tel:+911275262000">+91-1275-262000</a>
+        <a href="tel:+919717002464">+91-9717002464</a>
+        <a href="tel:+919717015111">+91-9717015111</a>
+      </div>
+      <div class="card">
+        <div class="card-label">Email</div>
+        <a href="mailto:info@kraftmanpackaging.com">info@kraftmanpackaging.com</a>
+      </div>
+    </div>
+
+    <p class="address">
+      Khasra No 69/8/2, Baghola Janoli Link Road, Village Janoli,<br />
+      Palwal, Faridabad, Haryana — 121102, India
+    </p>
+
+    <footer>
+      &copy; <span id="y">2026</span> Kraftman Packaging. All rights reserved.
+    </footer>
+
+  </main>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
