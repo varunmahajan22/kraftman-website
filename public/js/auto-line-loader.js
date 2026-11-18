@@ -27,7 +27,7 @@
   var SCRIPTS = [
     'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
     '/js/line-operator.js?v=1',
-    '/js/auto-line.js?v=5'
+    '/js/auto-line.js?v=9'
   ];
   var started = false;
 

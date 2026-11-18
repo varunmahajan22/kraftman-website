@@ -501,7 +501,7 @@
       el('div.card', el('h2', 'How it appears in Google'), el('p.note', 'The title is the blue link in search results; the description is the two lines under it.'),
         f('Google title', page, 'title', { max: data.limits.title }), f('Google description', page, 'description', { rows: 2, max: data.limits.description })),
       el('div.card', el('h2', 'Top of the page'), data.hasKicker ? f('Small label above the heading', page, 'kicker') : null,
-        f(data.home ? 'Tagline (the large line)' : 'Main heading', page, 'h1'), f(data.home ? 'Tagline, second line' : 'Introduction', page, 'lead', { rows: data.home ? 1 : 3 })),
+        f(data.home ? 'Headline' : 'Main heading', page, 'h1'), f(data.home ? 'Supporting line under the headline (leave empty for none)' : 'Introduction', page, 'lead', { rows: 3 })),
       data.home ? null : photoCard(),
       sections,
       el('div.card', el('h2', 'Questions and answers'), el('p.note', 'Shown at the foot of the page, and read by Google and AI assistants. Write the question the way a buyer would ask it.'),
@@ -557,7 +557,7 @@
     const inputs = {}, text = (key, label, rows) => { inputs[key] = rows ? el('textarea', { rows }, s[key] || '') : el('input', { type: 'text', value: s[key] || '' }); return field(label, inputs[key]); };
     const logo = el('div', { style: 'max-width:260px' }, pic(s.site_logo, 'logo', 'No logo'));
     main(header('Contact details', 'Shown in the footer, on the Contact page, and wherever a page says {phone}, {email} or {address}.'),
-      el('div.card', el('div.two', text('phone1', 'Main phone'), text('phone2', 'Second phone'), text('phone3', 'Third phone'), text('email', 'Email')), text('address', 'Plant address', 2),
+      el('div.card', el('div.two', text('phone1', 'Main phone'), text('phone2', 'Second phone'), text('phone3', 'Third phone'), text('email', 'Email')), text('address', 'Plant address', 2), text('tagline', 'Brand tagline, shown in the footer of every page. Separate the parts with |'),
         el('p', { style: 'margin-top:14px' }, el('button.btn', { type: 'button', onclick: () => run(() => { const body = {}; Object.keys(inputs).forEach(k => { body[k] = inputs[k].value.trim(); }); return api('PUT', API + '/settings', body); }, 'Saved.') }, 'Save'))),
       el('div.card', el('h2', 'Logo'), el('p.note', 'Used in the header and footer of every page, in Kraftman 3D Studio and in its watermark.'),
         el('div.photo-row', logo, picker('Replace the logo', false, files => run(async () => { const form = new FormData(); form.append('image', files[0]); const up = await api('POST', API + '/upload', form); await api('PUT', API + '/settings', { site_logo: up.url }); await screens.contact(); }, 'Logo replaced.')))));

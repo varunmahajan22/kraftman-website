@@ -142,8 +142,8 @@
     // Until it loads — or if no logo is set — the name is drawn as lettering.
     // A page that already shows the logo above the scene turns the sign off
     // with data-sign="off" on the stage, so the logo is not seen twice.
-    const stage = document.getElementById('autolineStage');
-    if (!stage || stage.getAttribute('data-sign') !== 'off') {
+    // data-sign="headline" letters the page's headline on the wall instead (see WALL HEADLINE below).
+    if (!stage.getAttribute('data-sign')) {
     const SIGN_X = -4.3, SIGN_Y = 3.0;
     const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 220;
     const tex = new THREE.CanvasTexture(cv);
@@ -548,6 +548,67 @@
     return f;
   })();
 
+  /* ── WALL HEADLINE ─────────────────────────────────────────────────
+     With data-sign="headline" the page's headline is lettered on the back
+     wall, like signage. It belongs to the room: the machines stand in front
+     of it and the camera holds still, so it stays exactly where it is while
+     the line runs and the supervisor walks. The page hides its own copy of
+     the headline once this one is showing. */
+  const FIXED = stage.getAttribute('data-sign') === 'headline';
+  // Where the still camera stands. On a wide screen it stands back far enough to show the whole line,
+  // feeder to stacker, and high enough that no machine reaches up in front of the lettering. A tall
+  // narrow screen cannot hold the whole line, so it stands closer, on the robot cell.
+  function stillView() {
+    const a = camera.aspect;
+    if (a < 1) return { x: 0.64, y: 2.3, z: 11.6 + 3.0 * clamp01((2.2 / a - 1) / 1.2), ax: 0, ay: 1.6 };
+    const z = Math.min(21, Math.max(11.6, 23.4 / (2 * Math.tan(camera.fov * Math.PI / 360) * a)));
+    return { x: 1.25, y: 3.0, z, ax: 1.25, ay: 1.9 };
+  }
+  const headline = FIXED ? (function () {
+    const text = stage.getAttribute('data-headline') || '';
+    const cv = document.createElement('canvas'), tex = new THREE.CanvasTexture(cv);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+    scene.add(mesh);
+    const FONT = '600 150px Montserrat, Arial, sans-serif', LINE = 178;
+    // Draw the words on one line, or on two broken as evenly as the words allow. Returns width ÷ height.
+    function draw(twoLines) {
+      const c = cv.getContext('2d'), words = text.split(' ');
+      c.font = FONT;
+      let lines = [text];
+      if (twoLines && words.length > 1) {
+        let best = Infinity;
+        for (let i = 1; i < words.length; i++) {
+          const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+          const widest = Math.max(c.measureText(a).width, c.measureText(b).width);
+          if (widest < best) { best = widest; lines = [a, b]; }
+        }
+      }
+      const w = Math.ceil(Math.max.apply(null, lines.map(l => c.measureText(l).width))) + 40, h = lines.length * LINE + 30;
+      cv.width = w; cv.height = h;                       // resizing clears the canvas and its settings
+      c.font = FONT; c.fillStyle = '#101a2c'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      lines.forEach((l, i) => c.fillText(l, w / 2, 15 + LINE / 2 + i * LINE));
+      tex.needsUpdate = true;
+      return w / h;
+    }
+    return { mesh, draw };
+  })() : null;
+  // Size the lettering to the wall the camera can see, and centre it on the camera's line of sight.
+  function placeHeadline() {
+    if (!headline) return;
+    const v = stillView(), dist = v.z - BACK_Z, tall = camera.aspect < 1;
+    const seen = 2 * dist * Math.tan(camera.fov * Math.PI / 360) * camera.aspect;     // width of wall in view
+    const ratio = headline.draw(tall);                  // two lines on a tall screen, one otherwise
+    const width = tall ? Math.min(seen * 0.8, 12.5) : Math.min(seen * 0.4, 13.2);   // small enough to clear the duct above and the tower below
+    headline.mesh.scale.set(width, width / ratio, 1);
+    // Between the duct and the machine tops, on the camera's line of sight.
+    headline.mesh.position.set(v.x + (v.ax - v.x) * dist / v.z, tall ? 3.12 : 3.47, BACK_Z + 0.03);
+  }
+  if (headline && document.fonts && document.fonts.load) {
+    document.fonts.load('600 150px Montserrat').then(() => { placeHeadline(); kick(); }).catch(() => {});
+  }
+
   /* ── FRAME ───────────────────────────────────────────────────────── */
   const aim = new THREE.Vector3();
   function pose(time) {
@@ -606,13 +667,32 @@
       operator.head.rotation.y = lerp(0, 0.75, io(seg(look, 0.55, 0.85)));
       operator.right.elbow.rotation.x = -1.2 + 0.1 * Math.max(0, Math.sin(time * 5)) * (look < 0.5 ? 1 : 0);
       operator.pony.rotation.x = 0.16 + 0.05 * Math.sin(time * 1.3);
+      if (FIXED) {
+        // She walks the length of the line behind the machines, pausing at each end to check her tablet.
+        const lap = (time * 0.028) % 1;
+        const x = lerp(-8.2, 9.2, io(seg(lap, 0.04, 0.46)) - io(seg(lap, 0.54, 0.96)));
+        const going = Math.sin(Math.PI * seg(lap, 0.04, 0.46)) - Math.sin(Math.PI * seg(lap, 0.54, 0.96));   // +1 out, −1 back, 0 standing
+        const pace = Math.min(1, Math.abs(going) * 2.2);
+        operator.root.position.set(x, 0, -2.5);
+        operator.root.rotation.y = lerp(0.25, (going < 0 ? -1 : 1) * 1.35, pace);
+        const stride = 0.5 * pace * Math.sin(x * 3.4);
+        operator.legs[0].rotation.x = stride;
+        operator.legs[1].rotation.x = -stride;
+      }
     }
 
-    // Camera: a slow pan along the line. Narrow screens pan further and sit closer in.
-    const narrow = clamp01((2.2 / camera.aspect - 1) / 1.2);
-    const pan = (3.2 + 3.6 * narrow) * Math.sin(time * 0.1);
-    aim.set(1.2 + pan, 1.6, 0);
-    camera.position.set(1.6 + pan * 0.8, 2.3, 11.6 + 3.0 * narrow);
+    // Camera: still when the headline is lettered on the wall; otherwise a slow pan along the line.
+    // Narrow screens pan further and sit closer in.
+    if (FIXED) {
+      const v = stillView();
+      aim.set(v.ax, v.ay, 0);
+      camera.position.set(v.x, v.y, v.z);
+    } else {
+      const narrow = clamp01((2.2 / camera.aspect - 1) / 1.2);
+      const pan = (3.2 + 3.6 * narrow) * Math.sin(time * 0.1);
+      aim.set(1.2 + pan, 1.6, 0);
+      camera.position.set(1.6 + pan * 0.8, 2.3, 11.6 + 3.0 * narrow);
+    }
     camera.lookAt(aim);
   }
 
@@ -638,6 +718,7 @@
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    placeHeadline();
     kick();
   }
   window.addEventListener('resize', resize);
