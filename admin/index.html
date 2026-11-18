@@ -341,11 +341,20 @@
         el('p', { style: 'margin-top:12px' }, el('button.link', { type: 'button', onclick: () => go('enquiries') }, 'All enquiries'))));
   };
 
-  /* ── Products: six families, each with a main photo and a gallery ── */
+  /* ── Products: the product ranges, each with a main photo and a gallery ── */
   screens.products = async slug => {
     const fams = await api('GET', CMS + '/families');
     if (!slug) {
-      return main(header('Products', 'The six product families. Each has a main photo, shown at the top of its page and on its tile, and a gallery of examples shown on its page.'),
+      const addRange = () => {
+        const name = el('input', { type: 'text', maxLength: 80 }), blurb = el('textarea', { rows: 2, maxLength: 240 });
+        dialog([el('h2', 'Add a product range'), el('p.muted', 'It gets its own tile on the homepage and the Products page, and its own page on the website.'),
+          field('Name, such as "Paper bags"', name), field('One line about it', blurb),
+          el('div.actions', el('button.btn.ghost', { type: 'button', onclick: closeDialog }, 'Cancel'), el('button.btn', { type: 'button', onclick: () => run(async () => {
+            const made = await api('POST', CMS + '/families', { name: name.value, blurb: blurb.value });
+            closeDialog(); go('products', made.slug);
+          }, 'Added. Now upload its photos.') }, 'Add'))]);
+      };
+      return main(header('Products', 'Your product ranges. Each has a main photo, shown at the top of its page and on its tile, and a gallery of examples shown on its page.', [el('button.btn', { type: 'button', onclick: addRange }, 'Add a product range')]),
         el('div.grid', fams.map(f => el('button.tile', { type: 'button', style: 'text-align:left', onclick: () => go('products', f.slug) },
           pic(f.photo && f.photo.url), el('h2', f.name), el('p.muted.small', f.gallery.filter(g => g.image).length + ' photos in the gallery')))));
     }
@@ -365,7 +374,8 @@
           g.active ? null : el('span.chip', 'Hidden')));
     }));
     sortable(gallery, ids => run(() => api('POST', CMS + '/families/' + slug + '/gallery/order', { ids }), 'Order saved.'));
-    main(header(f.name, 'Shown on the website at ' + f.href, [el('button.btn.ghost', { type: 'button', onclick: () => go('products') }, 'All products'), el('a.btn.ghost', { href: f.href, target: '_blank', rel: 'noopener' }, 'View page')]),
+    main(header(f.name, 'Shown on the website at ' + f.href, [el('button.btn.ghost', { type: 'button', onclick: () => go('products') }, 'All products'), el('a.btn.ghost', { href: f.href, target: '_blank', rel: 'noopener' }, 'View page'),
+        f.custom ? el('button.btn.danger', { type: 'button', onclick: () => confirmBox('Remove "' + f.name + '" and its page from the website?', 'Remove', () => run(async () => { await api('DELETE', CMS + '/families/' + slug); go('products'); }, 'Removed.')) }, 'Remove this range') : null]),
       el('div.card', el('h2', 'Tile'), el('p.note', 'The name and line shown on the homepage and on the Products page.'),
         field('Name', name), field('One line about it', blurb),
         el('p', { style: 'margin-top:12px' }, el('button.btn', { type: 'button', onclick: () => run(() => api('PUT', CMS + '/families/' + slug, { name: name.value, blurb: blurb.value }), 'Saved.') }, 'Save'))),
@@ -476,7 +486,7 @@
       }
       if (shape.kind === 'certs') body.push(el('p.muted', { style: 'margin-top:12px' }, 'The list itself comes from Certifications, so it is the same on every page.'));
       if (shape.kind === 'catalogue') body.push(el('p.muted', { style: 'margin-top:12px' }, 'The photographs come from Products. With no photos, this section is left off the page.'));
-      if (shape.kind === 'families') body.push(el('p.muted', { style: 'margin-top:12px' }, 'The six tiles come from Products.'));
+      if (shape.kind === 'families') body.push(el('p.muted', { style: 'margin-top:12px' }, 'The tiles come from Products.'));
       return el('div.card', el('h3', 'Section ' + (i + 1)), shape.note ? el('p.note', shape.note) : null, f('Heading', s, 'h2'),
         shape.intro ? f('Line under the heading', s, 'intro', { rows: 2 }) : null, body, shape.after ? f('Closing line', s, 'after', { rows: 2 }) : null);
     });

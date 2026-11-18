@@ -67,6 +67,11 @@ router.post('/page/photo', upload.single('image'), wrap(async (req, res) => {
 
 /* ── Product families and their photographs ─────────────────────────── */
 router.get('/families', (req, res) => res.json(store.families()));
+router.post('/families', (req, res) => {
+  const made = store.addFamily(req.body.name, req.body.blurb);
+  return made.error ? res.status(400).json({ error: made.error }) : res.json(made);
+});
+router.delete('/families/:slug', (req, res) => (store.removeFamily(req.params.slug) ? res.json({ success: true }) : res.status(400).json({ error: 'Only a product range you added can be removed.' })));
 router.put('/families/:slug', (req, res) => {
   const done = store.family(req.params.slug, fam => { fam.name = store.text(req.body.name, 80); fam.blurb = store.text(req.body.blurb, 240); return true; });
   return done ? res.json({ success: true }) : res.status(404).json({ error: 'No such product family.' });
