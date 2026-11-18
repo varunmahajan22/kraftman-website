@@ -3,7 +3,7 @@
 
     <!-- ═══ HERO ════════════════════════════════════════════════════════ -->
     <!-- The headline is lettered on the wall of the 3D scene itself (auto-line.js, data-sign="headline"),
-         where it stays put while the line runs. The <h1> below is the same words for search engines,
+         where it stays put while the line runs. The main heading below is the same words for search engines,
          screen readers and browsers without WebGL; it is hidden once the scene is showing. -->
     <section class="v2-hero" id="autoline">
       <div class="v2-hero-media" id="autolineStage" data-sign="headline" data-headline="{{ssr:h1}}">
@@ -20,6 +20,19 @@
       <p class="v2-hero-caption">Shown: the fully automatic rigid box line we have on order. Coming soon.</p>
     </section>
 
+    <!-- ═══ WHAT WE MAKE: the six product families ═════════════════════ -->
+    <section class="v2-section v2-block v2-products" id="products">
+      <div class="v2-block-head">
+        <p class="v2-kicker">What we make</p>
+        <h2 class="v2-title">{{ssr:products-h2}}</h2>
+        <p class="v2-intro">{{ssr:products-intro}}</p>
+        <p class="v2-more"><a class="v2-link" href="/products">All products <span>&nearr;</span></a></p>
+      </div>
+      <div class="v2-block-body">
+        {{ssr:product-tiles}}
+      </div>
+    </section>
+
     <!-- ═══ ABOUT ═══════════════════════════════════════════════════════ -->
     <section class="v2-section v2-about" id="about">
       <p class="v2-kicker">About Kraftman Packaging</p>
@@ -34,19 +47,6 @@
       <dl class="v2-stats">
         {{ssr:stats}}
       </dl>
-    </section>
-
-    <!-- ═══ WHAT WE MAKE: the six product families ═════════════════════ -->
-    <section class="v2-section v2-block v2-products" id="products">
-      <div class="v2-block-head">
-        <p class="v2-kicker">What we make</p>
-        <h2 class="v2-title">{{ssr:products-h2}}</h2>
-        <p class="v2-intro">{{ssr:products-intro}}</p>
-        <p class="v2-more"><a class="v2-link" href="/products">All products <span>&nearr;</span></a></p>
-      </div>
-      <div class="v2-block-body">
-        {{ssr:product-tiles}}
-      </div>
     </section>
 
     <!-- ═══ 3D STUDIO ═══════════════════════════════════════════════════ -->

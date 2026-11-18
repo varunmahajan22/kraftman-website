@@ -67,10 +67,17 @@ const MAINTENANCE_ALLOW = /^\/(admin|health|uploads|css|js|images|favicon|robots
 // this guard makes that a code guarantee rather than an nginx-config one: any
 // request arriving with an ERP hostname is passed straight through.
 const ERP_HOSTS = /^erp\./i;
+// The site's preferred host, when it is a www address (from SITE_URL, default www.kraftmanpackaging.com).
+const WWW_HOST = (() => { const h = (process.env.SITE_URL || 'https://www.kraftmanpackaging.com').replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase(); return h.indexOf('www.') === 0 ? h : ''; })();
 
 app.use((req, res, next) => {
   const host = (req.hostname || '').toLowerCase();
   if (ERP_HOSTS.test(host)) return next();
+  // One address for the site: kraftmanpackaging.com is sent to www.kraftmanpackaging.com, so search
+  // engines see one copy of every page. Only page views are redirected, never form posts.
+  if (WWW_HOST && host === WWW_HOST.slice(4) && (req.method === 'GET' || req.method === 'HEAD')) {
+    return res.redirect(301, 'https://' + WWW_HOST + req.originalUrl);
+  }
   if (!maintenanceOn() || MAINTENANCE_ALLOW.test(req.path)) return next();
   // A signed preview link from the admin still opens its page, so the team can
   // check their work on the real server while the public sees "Under Renewal".
@@ -236,7 +243,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 Kraftman Packaging Website running at http://localhost:${PORT}`);
   console.log(`📊 Admin Panel: http://localhost:${PORT}/admin`);
-  console.log(`🔑 Default admin: admin / KraftmanAdmin@2024\n`);
+  console.log('');
 });
 
 module.exports = app;
