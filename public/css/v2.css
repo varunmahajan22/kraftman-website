@@ -421,24 +421,22 @@ a.v2-tile:hover { background: var(--mist); }
 .v2-bullets li::before { content: ''; position: absolute; left: 2px; top: 1.55em; width: 10px; height: 1px; background: var(--gold); }
 
 .v2-products { border-top: 0; background: var(--mist); }
-/* Product tiles: a photograph, a name and one quiet line, with air between them. Photographs of
-   packaging are busy by nature, so the frame round them stays plain. */
-.v2-tiles:not(.v2-gallery) { gap: clamp(20px, 2.4vw, 36px); background: none; border: 0; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-.v2-tiles:not(.v2-gallery) .v2-tile { padding: 0 0 4px; background: none; gap: 6px; }
-.v2-tiles:not(.v2-gallery) .v2-tile img { width: 100%; margin: 0 0 12px; aspect-ratio: 4 / 3; background: var(--paper); transition: opacity .25s; }
-.v2-tiles:not(.v2-gallery) a.v2-tile:hover { background: none; }
-.v2-tiles:not(.v2-gallery) a.v2-tile:hover img { opacity: .86; }
-.v2-tiles:not(.v2-gallery) .v2-tile h3 { font-size: .98rem; }
-.v2-tiles:not(.v2-gallery) .v2-tile p { font-size: .86rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.v2-tiles:not(.v2-gallery) .v2-tile .v2-link { display: none; }
-/* On the homepage the heading sits above and the tiles run the full width, three to a row,
-   each with a photograph and a name only. */
-.v2-products { grid-template-columns: 1fr; gap: clamp(28px, 4vw, 48px); }
+/* Product tiles ("What we make"): a warm-white ground, identical 4:3 frames with one picture each,
+   a quiet heading and one line of text. Three to a row on a desktop, two on a phone. */
+.v2-products { background: #faf8f4; grid-template-columns: 1fr; gap: clamp(28px, 4vw, 52px); }
 .v2-products .v2-block-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 8px 32px; }
 .v2-products .v2-block-head > * { grid-column: 1; }
 .v2-products .v2-block-head .v2-more { grid-column: 2; grid-row: 1 / span 3; margin: 0; }
-.v2-products .v2-tiles:not(.v2-gallery) { grid-template-columns: repeat(3, 1fr); }
-.v2-products .v2-tiles:not(.v2-gallery) .v2-tile p { display: none; }
+.v2-tiles:not(.v2-gallery) { grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 3.2vw, 48px) clamp(20px, 2.4vw, 36px); background: none; border: 0; }
+.v2-tiles:not(.v2-gallery) .v2-tile { padding: 0; background: none; gap: 0; }
+.v2-tile-photo { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 6px; background: #efece6; margin-bottom: 18px; }
+.v2-tiles:not(.v2-gallery) .v2-tile-photo img { width: 100%; height: 100%; margin: 0; aspect-ratio: auto; object-fit: cover; transition: transform .5s ease; }
+.v2-tiles:not(.v2-gallery) a.v2-tile:hover { background: none; }
+.v2-tiles:not(.v2-gallery) a.v2-tile:hover .v2-tile-photo img { transform: scale(1.03); }
+.v2-tiles:not(.v2-gallery) .v2-tile h3 { font: 600 clamp(1.2rem, 1.6vw, 1.45rem)/1.25 'Montserrat', var(--text); letter-spacing: -.01em; color: #101a2c; transition: color .25s; }
+.v2-tiles:not(.v2-gallery) a.v2-tile:hover h3 { color: var(--gold); }
+.v2-tiles:not(.v2-gallery) .v2-tile p { margin-top: 8px; font-size: .96rem; line-height: 1.55; color: var(--muted); flex: none; }
+.v2-tiles:not(.v2-gallery) .v2-tile .v2-link { display: none; }
 .v2-map { margin-top: 8px; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
 .is-inner .v2-contact { padding-top: clamp(56px, 7vw, 100px); padding-bottom: clamp(56px, 7vw, 100px); }
 .v2-form button:disabled { opacity: .5; cursor: default; }
@@ -478,7 +476,10 @@ a.v2-tile:hover { background: var(--mist); }
 }
 @media (max-width: 560px) {
   .v2-form, .v2-steps, .v2-footer-cols { grid-template-columns: 1fr; }
-  .v2-products .v2-tiles:not(.v2-gallery) { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .v2-tiles:not(.v2-gallery) { grid-template-columns: 1fr 1fr; gap: 24px 14px; }
+  .v2-tile-photo { margin-bottom: 12px; }
+  .v2-tiles:not(.v2-gallery) .v2-tile h3 { font-size: 1.02rem; }
+  .v2-tiles:not(.v2-gallery) .v2-tile p { font-size: .86rem; }
   .v2-products .v2-block-head { grid-template-columns: 1fr; }
   .v2-products .v2-block-head .v2-more { grid-column: 1; grid-row: auto; margin-top: 14px; }
   .v2-header { justify-content: flex-start; padding-left: var(--pad); }

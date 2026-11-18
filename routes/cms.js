@@ -20,7 +20,8 @@ const router = express.Router();
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, images.UPLOADS),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
+    // A product photo is named after its range ("rigid-boxes-…"), which search engines read; anything else by time.
+    filename: (req, file, cb) => cb(null, (/^[a-z0-9-]+$/.test(req.params.slug || '') ? 'kraftman-' + req.params.slug + '-' : '') + Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
   }),
   fileFilter: (req, file, cb) => (/\.(jpe?g|png|gif|webp|avif|tiff?|bmp|svg)$/i.test(file.originalname) && /image/.test(file.mimetype) ? cb(null, true) : cb(new Error('Only picture files can be uploaded.'))),
   limits: { fileSize: 25 * 1024 * 1024 },
