@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kraftman 3D Studio: See Your Packaging Before Print | Kraftman Packaging</title>
+  <meta name="description" content="Design packaging in 3D: enter your size, pick a PANTONE colour, upload artwork as a PDF or image, add foil, spot UV, embossing and a window, then send the spec to Kraftman Packaging for a quote." />
+  <link rel="canonical" href="https://www.kraftmanpackaging.com/studio.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Kraftman Packaging" />
+  <meta property="og:url" content="https://www.kraftmanpackaging.com/studio.html" />
+  <meta property="og:title" content="3D Packaging Studio by Kraftman Packaging" />
+  <meta property="og:description" content="Enter your size, colour, artwork and finishes, and see your packaging in 3D before it is printed." />
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Kraftman 3D Studio","url":"https://www.kraftmanpackaging.com/studio.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"description":"Design packaging in 3D: enter a size, pick a PANTONE colour, upload artwork as a PDF or image, add foil, spot UV, embossing and a window, see the flat layout, and request a quote.","provider":{"@id":"https://www.kraftmanpackaging.com/#organization"}}</script>
+
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend+Exa:wght@300;400;500&family=Montserrat:wght@700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/studio.css?v=4" />
+</head>
+<body>
+
+  <header class="st-header">
+    <a class="st-brand" href="/" id="stBrand">Kraftman Packaging</a>
+    <nav>
+      <a href="/">Back to site</a>
+      <a class="st-btn" href="#stQuote">Get a quote for this</a>
+    </nav>
+  </header>
+
+  <main class="st-app">
+
+    <!-- ═══ CONTROLS ═══════════════════════════════════════════════════ -->
+    <aside class="st-panel" aria-label="Design controls">
+      <div class="st-intro">
+        <p class="st-kicker">Kraftman 3D Studio</p>
+        <h1>See your packaging before it is printed.</h1>
+        <p>Choose a product, enter your size, add your colour, artwork and finishes, then send us the spec for a quote.</p>
+      </div>
+
+      <details class="st-step" open>
+        <summary><b>1</b> Product</summary>
+        <div class="st-types" id="stTypes"></div>
+      </details>
+
+      <details class="st-step" open>
+        <summary><b>2</b> Size</summary>
+        <div class="st-row3">
+          <label><span id="stLLabel">Length</span><span class="st-unit"><input id="stL" type="number" min="20" max="800" step="1" inputmode="numeric" /> mm</span></label>
+          <label id="stWWrap"><span id="stWLabel">Width</span><span class="st-unit"><input id="stW" type="number" min="10" max="800" step="1" inputmode="numeric" /> mm</span></label>
+          <label><span id="stHLabel">Height</span><span class="st-unit"><input id="stH" type="number" min="20" max="800" step="1" inputmode="numeric" /> mm</span></label>
+        </div>
+
+        <label class="st-slider" id="stLidWrap">Lid depth <output id="stLidOut"></output>
+          <input id="stLid" type="range" min="15" max="100" step="1" /></label>
+        <label class="st-slider" id="stLipWrap"><span id="stLipLabel">Front height</span> <output id="stLipOut"></output>
+          <input id="stLip" type="range" min="10" max="100" step="1" /></label>
+        <label class="st-field" id="stHoleWrap">Hang hole
+          <select id="stHole"><option value="slot">Slot for a peg hook</option><option value="round">Round hole</option><option value="none">None</option></select></label>
+
+        <div id="stWindowWrap">
+          <label class="st-check"><input id="stWindowOn" type="checkbox" /> Window in the front panel</label>
+          <div class="st-sub" id="stWindowControls">
+            <label class="st-field">Shape
+              <select id="stWindowShape"><option value="rounded">Rounded rectangle</option><option value="rect">Rectangle</option><option value="oval">Oval</option></select></label>
+            <label class="st-slider">Window width <output id="stWinWOut"></output><input id="stWinW" type="range" min="15" max="90" step="1" /></label>
+            <label class="st-slider">Window height <output id="stWinHOut"></output><input id="stWinH" type="range" min="10" max="90" step="1" /></label>
+            <label class="st-slider">Position across <output id="stWinXOut"></output><input id="stWinX" type="range" min="10" max="90" step="1" /></label>
+            <label class="st-slider">Position up <output id="stWinYOut"></output><input id="stWinY" type="range" min="10" max="90" step="1" /></label>
+          </div>
+        </div>
+        <label class="st-check" id="stProductWrap"><input id="stProduct" type="checkbox" /> Show a sample product inside</label>
+      </details>
+
+      <details class="st-step" open>
+        <summary><b>3</b> Colour and coating</summary>
+        <p class="st-current">Outside: <strong id="stColourName"></strong></p>
+        <input class="st-search" id="stColourSearch" type="search" placeholder="Search PANTONE reference, e.g. 289 or Reflex" aria-label="Search colours" />
+        <div class="st-swatches" id="stSwatches" role="listbox" aria-label="Spot colours"></div>
+        <div class="st-row2">
+          <label class="st-field">Custom colour<input id="stHex" type="color" /></label>
+          <label class="st-field">Inside<select id="stInside"></select></label>
+        </div>
+        <label class="st-field">Coating<select id="stCoating"></select></label>
+      </details>
+
+      <details class="st-step" open>
+        <summary><b>4</b> Artwork and effects</summary>
+        <div class="st-tabs" id="stFaces" role="tablist" aria-label="Face to edit"></div>
+
+        <div class="st-block">
+          <h3>Artwork for this face</h3>
+          <p class="st-help">Upload a PDF or an image. We place it for you: a single panel goes on this face, a flat layout is wrapped round the box.</p>
+          <label class="st-upload"><input id="stArt" type="file" accept="application/pdf,.pdf,image/png,image/jpeg,image/webp,image/svg+xml" /><span id="stArtInfo">Upload artwork (PDF, PNG, JPG or SVG)</span></label>
+          <p class="st-auto" id="stArtNote" role="status" aria-live="polite" hidden></p>
+          <div id="stArtControls" hidden>
+            <label class="st-field" id="stPlaceWrap">Placement
+              <select id="stPlace"><option value="face">On this face only</option><option value="wrap">Wrapped around the four sides</option><option value="flat">Flat carton layout: sides, top and bottom</option></select></label>
+            <label class="st-field" id="stStartWrap">Left-most panel on the sheet
+              <select id="stStart"><option value="front">Front</option><option value="right">Right side</option><option value="back">Back</option><option value="left">Left side</option></select></label>
+            <label class="st-field" id="stPageWrap">PDF page<select id="stPage"></select></label>
+            <div class="st-row2">
+              <label class="st-field">Fit<select id="stFit"><option value="cover">Fill the face</option><option value="contain">Fit inside the face</option></select></label>
+              <label class="st-slider">Scale <output id="stArtScaleOut"></output><input id="stArtScale" type="range" min="20" max="200" step="1" /></label>
+            </div>
+            <div class="st-row2 st-actions">
+              <button class="st-add" id="stArtTurn" type="button">Turn a quarter turn</button>
+              <button class="st-add" id="stArtAuto" type="button">Place it automatically again</button>
+            </div>
+          </div>
+          <button class="st-link" id="stArtRemove" type="button" hidden>Remove artwork</button>
+        </div>
+
+        <div class="st-block">
+          <h3>Text, logos and finishes</h3>
+          <p class="st-help">Add text or a logo, then choose how it is finished: printed, foil, spot UV, embossed or debossed. Each one is set clear of the window, hang hole and lid seam until you move it.</p>
+          <div class="st-row2">
+            <button class="st-add" id="stAddText" type="button">+ Add text</button>
+            <label class="st-add"><input id="stAddImage" type="file" accept="application/pdf,.pdf,image/png,image/jpeg,image/webp,image/svg+xml" />+ Add logo</label>
+          </div>
+          <div id="stEls"></div>
+        </div>
+      </details>
+
+      <details class="st-step" open id="stQuote">
+        <summary><b>5</b> Send for a quote</summary>
+        <pre class="st-spec" id="stSpec"></pre>
+        <form class="st-form" id="stForm" novalidate>
+          <label>Name<input name="name" type="text" autocomplete="name" required /></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+          <label>Phone<input name="phone" type="tel" autocomplete="tel" /></label>
+          <label>Company<input name="company" type="text" autocomplete="organization" /></label>
+          <label class="wide">Quantity and notes<textarea name="notes" rows="2"></textarea></label>
+          <button class="st-btn wide" type="submit">Send this spec for a quote</button>
+          <p class="st-note wide" id="stNote" role="status" aria-live="polite"></p>
+        </form>
+        <p class="st-help">Your artwork is read on your own device and is not sent to us. We will ask you to email the print files when we reply.</p>
+      </details>
+    </aside>
+
+    <!-- ═══ 3D VIEW ════════════════════════════════════════════════════ -->
+    <section class="st-view mode-3d" id="stView" aria-label="Preview">
+      <div class="st-pane st-pane-flat">
+        <canvas id="stFlat" aria-label="Flat layout of the product, showing each printed panel with cut, crease and bleed lines"></canvas>
+        <p class="st-legend"><i class="trim"></i>Cut <i class="crease"></i>Crease <i class="bleed"></i>Bleed 3 mm <span>Drag text and logos to move them.</span></p>
+      </div>
+      <div class="st-pane st-pane-3d">
+        <canvas id="stCanvas"></canvas>
+        <p class="st-hint">Drag to turn. Scroll or pinch to zoom.</p>
+      </div>
+      <div class="st-toolbar">
+        <label class="st-slider" id="stOpenWrap">Open <input id="stOpen" type="range" min="0" max="100" step="1" value="0" /></label>
+        <div class="st-modes" id="stModes" role="group" aria-label="View">
+          <button type="button" data-mode="3d">3D</button><button type="button" data-mode="flat">Flat</button><button type="button" data-mode="both">Both</button>
+        </div>
+        <label class="st-check"><input id="stSpin" type="checkbox" checked /> Turn slowly</label>
+        <button id="stReset" type="button">Reset view</button>
+        <button id="stShot" type="button">Download image</button>
+        <button id="stFlatSave" type="button">Download layout</button>
+      </div>
+      <p class="st-disclaimer">On-screen simulation. Colours and finishes are indicative, and the flat layout is for placing artwork: our CAD team draws the production dieline.</p>
+      <p class="st-fallback">3D preview needs WebGL, which this browser does not provide. You can still send us your size and requirements using the form.</p>
+    </section>
+
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/js/studio-palette.js?v=1"></script>
+  <script src="/js/studio-boxes.js?v=3"></script>
+  <script src="/js/studio-flat.js?v=3"></script>
+  <script src="/js/studio.js?v=11"></script>
+</body>
+</html>

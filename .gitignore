@@ -6,3 +6,10 @@ node_modules/
 # Runtime maintenance-mode toggle — must never be committed, or a deploy
 # would silently put the live site into "Under Renewal".
 data/maintenance.flag
+
+# Backups written by the scripts/ tools before they change the database.
+data/db.json.bak-*
+
+# Full-size originals of uploaded photos, kept so a picture can be cropped again.
+# They live on the server only: they are large and are never part of a release.
+public/uploads/originals/

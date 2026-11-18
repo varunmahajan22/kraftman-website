@@ -1,0 +1,145 @@
+    <!-- The homepage's layout. lib/render.js wraps it in the shared page frame and fills each
+         {{ssr:name}} with the words from the content manager (defaults in lib/content.js). -->
+
+    <!-- ═══ HERO ════════════════════════════════════════════════════════ -->
+    <section class="v2-hero" id="autoline">
+      <div class="v2-hero-media" id="autolineStage" data-sign="off">
+        <canvas id="autolineCanvas" aria-label="Animated preview of the fully automatic rigid box line Kraftman Packaging has on order"></canvas>
+      </div>
+      <div class="v2-hero-copy">
+        <h1>{{ssr:h1}}</h1>
+        <p class="v2-hero-tag">{{ssr:tag}}</p>
+        <div class="v2-hero-actions">
+          <a class="v2-btn" href="/studio.html">Kraftman 3D Studio <span>&nearr;</span></a>
+          <a class="v2-link" href="#products">See what we make <span>&darr;</span></a>
+        </div>
+      </div>
+      <p class="v2-hero-caption">Shown: the fully automatic rigid box line we have on order. Coming soon.</p>
+      <a class="v2-scroll" href="#about" aria-label="Scroll down"><i></i></a>
+    </section>
+
+    <!-- ═══ ABOUT ═══════════════════════════════════════════════════════ -->
+    <section class="v2-section v2-about" id="about">
+      <p class="v2-kicker">About Kraftman Packaging</p>
+      <h2 class="v2-title">{{ssr:about-h2}}</h2>
+      <div class="v2-about-grid">
+        <p class="v2-lead">{{ssr:about-lead}}</p>
+        <div>
+          <p>{{ssr:about-p}}</p>
+          <p class="v2-more"><a class="v2-link" href="/about">More about us <span>&nearr;</span></a></p>
+        </div>
+      </div>
+      <dl class="v2-stats">
+        {{ssr:stats}}
+      </dl>
+    </section>
+
+    <!-- ═══ WHAT WE MAKE: the six product families ═════════════════════ -->
+    <section class="v2-section v2-block v2-products" id="products">
+      <div class="v2-block-head">
+        <p class="v2-kicker">What we make</p>
+        <h2 class="v2-title">{{ssr:products-h2}}</h2>
+        <p class="v2-intro">{{ssr:products-intro}}</p>
+        <p class="v2-more"><a class="v2-link" href="/products">All products <span>&nearr;</span></a></p>
+      </div>
+      <div class="v2-block-body">
+        {{ssr:product-tiles}}
+      </div>
+    </section>
+
+    <!-- ═══ 3D STUDIO ═══════════════════════════════════════════════════ -->
+    <section class="v2-band">
+      <div>
+        <p class="v2-kicker">Kraftman 3D Studio</p>
+        <h2>{{ssr:studio-h2}}</h2>
+        <p>{{ssr:studio-p}}</p>
+      </div>
+      <div class="v2-band-actions">
+        <a class="v2-btn" href="/studio.html">Open Kraftman 3D Studio <span>&nearr;</span></a>
+        <a class="v2-btn ghost" href="/contact">Request a quote <span>&nearr;</span></a>
+      </div>
+    </section>
+
+    <!-- ═══ CAPABILITIES ════════════════════════════════════════════════ -->
+    <section class="v2-section v2-showcase flip" id="capabilities">
+      <div class="v2-showcase-head">
+        <p class="v2-kicker">Capabilities</p>
+        <h2 class="v2-title">{{ssr:caps-h2}}</h2>
+        <p class="v2-intro">{{ssr:caps-intro}}</p>
+        <p class="v2-more"><a class="v2-link" href="/capabilities">Machines and formats <span>&nearr;</span></a></p>
+      </div>
+      <div class="v2-showcase-body">
+        <ol class="v2-tabs" id="v2Caps">
+          {{ssr:capabilities}}
+        </ol>
+        {{ssr:capability-image}}
+      </div>
+    </section>
+
+    <!-- ═══ THE AUTOMATIC LINE ══════════════════════════════════════════ -->
+    <section class="v2-section v2-line" id="line">
+      <div>
+        <p class="v2-kicker">Coming soon</p>
+        <h2 class="v2-title">{{ssr:line-h2}}</h2>
+        <p class="v2-intro">{{ssr:line-intro}}</p>
+      </div>
+      <ol class="v2-steps">
+        {{ssr:line-steps}}
+      </ol>
+    </section>
+
+    <!-- ═══ RIGID BOX STYLES: pick a style, watch it built ═════════════ -->
+    <section class="v2-section v2-showcase" id="styles">
+      <div class="v2-showcase-head">
+        <p class="v2-kicker">Rigid boxes</p>
+        <h2 class="v2-title">{{ssr:styles-h2}}</h2>
+        <p class="v2-intro">{{ssr:styles-intro}}</p>
+      </div>
+      <div class="v2-showcase-body">
+        <ol class="v2-tabs" id="v2Styles">
+          {{ssr:styles}}
+        </ol>
+        <div class="v2-media boxstyle-clip">
+          <iframe id="v2StyleClip" data-src="/lid-base-box.html?clip=1" title="Lid and base rigid box being made" tabindex="-1" scrolling="no"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CERTIFICATIONS & CLIENTS ═══════════════════════════════════ -->
+    <section class="v2-section v2-trust" id="certifications" {{ssr:hide-trust}}>
+      <div {{ssr:hide-certifications}}>
+        <p class="v2-kicker">Certifications and audits</p>
+        <h2 class="v2-title">{{ssr:certs-h2}}</h2>
+        <ul class="v2-certs">
+        {{ssr:certifications}}
+        </ul>
+        <p class="v2-more"><a class="v2-link" href="/quality">How we control quality <span>&nearr;</span></a></p>
+      </div>
+      <div {{ssr:hide-clients}}>
+        <p class="v2-kicker">Clients</p>
+        <div class="v2-logos">{{ssr:clients}}</div>
+        <p class="v2-more"><a class="v2-link" href="/industries">Industries we pack for <span>&nearr;</span></a></p>
+      </div>
+    </section>
+
+    <!-- ═══ QUESTIONS ═══════════════════════════════════════════════════ -->
+    <section class="v2-section v2-faq" id="faq">
+      <div>
+        <p class="v2-kicker">Questions</p>
+        <h2 class="v2-title">Questions we are asked.</h2>
+      </div>
+      <div class="v2-faq-list">
+        {{ssr:faqs}}
+      </div>
+    </section>
+
+    <!-- ═══ CONTACT ═════════════════════════════════════════════════════ -->
+    <section class="v2-contact" id="contact">
+      <div class="v2-contact-copy">
+        <p class="v2-kicker">Request a quote</p>
+        <h2 class="v2-title">{{ssr:contact-h2}}</h2>
+        <p>{{ssr:contact-p}}</p>
+        {{ssr:contact-list}}
+      </div>
+      {{ssr:enquiry-form}}
+    </section>

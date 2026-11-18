@@ -23,6 +23,8 @@ const defaultDB = {
   certifications: [],
   cert_badges: [],
   capabilities: [],
+  pages: {},      // edits to page content, by path: { draft, published, draft_at, published_at, by }
+  families: {},   // product families, by slug: { name, blurb, photo, gallery: [{ id, image, caption, sort, active }] }
   _counters: { admins: 0, products: 0, gallery: 0, enquiries: 0, testimonials: 0, clients: 0, certifications: 0, cert_badges: 0, capabilities: 0 }
 };
 
@@ -71,9 +73,12 @@ const adminUsername = process.env.ADMIN_USERNAME || 'admin';
 const adminPassword = process.env.ADMIN_PASSWORD || 'KraftmanAdmin@2024';
 if (!db.admins.find(a => a.username === adminUsername)) {
   db._counters.admins = (db._counters.admins || 0) + 1;
-  db.admins.push({ id: db._counters.admins, username: adminUsername, password_hash: bcrypt.hashSync(adminPassword, 12), created_at: new Date().toISOString() });
+  db.admins.push({ id: db._counters.admins, username: adminUsername, password_hash: bcrypt.hashSync(adminPassword, 12), role: 'owner', created_at: new Date().toISOString() });
   console.log(`✅ Admin created: ${adminUsername}`);
 }
+
+// Roles: an owner manages everything; an editor manages content. Logins made before roles existed are owners.
+db.admins.forEach(a => { if (!a.role) a.role = 'owner'; });
 
 // Seed default products
 if (!db.products.length) {
@@ -475,5 +480,11 @@ const orm = {
     };
   },
 };
+
+// Whole-database access for the content manager (lib/store.js): read a fresh
+// copy, or change it inside one load-and-save.
+orm.read = () => { db = load(); return db; };
+orm.write = change => { db = load(); const result = change(db); save(db); return result; };
+orm.nextId = (data, table) => { data._counters[table] = (data._counters[table] || 0) + 1; return data._counters[table]; };
 
 module.exports = orm;
