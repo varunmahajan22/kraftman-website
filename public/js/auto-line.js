@@ -135,8 +135,8 @@
     });
     const duct = cyl(0.2, wallW - 4, M.alu, 28);
     duct.rotation.z = HALF;
-    at(duct, scene, (LEFT_X + RIGHT_X) / 2, 4.14, BACK_Z + 0.75);
-    for (let x = -12; x <= 19; x += 5.2) at(box(0.7, 0.1, 0.34, M.white, false), scene, x, 3.92, BACK_Z + 0.75);
+    at(duct, scene, (LEFT_X + RIGHT_X) / 2, 4.27, BACK_Z + 0.75);
+    for (let x = -12; x <= 19; x += 5.2) at(box(0.7, 0.1, 0.34, M.white, false), scene, x, 4.05, BACK_Z + 0.75);
 
     // Wall sign: the company logo from Site Settings on a mounted board.
     // Until it loads — or if no logo is set — the name is drawn as lettering.
@@ -600,13 +600,62 @@
     const v = stillView(), dist = v.z - BACK_Z, tall = camera.aspect < 1;
     const seen = 2 * dist * Math.tan(camera.fov * Math.PI / 360) * camera.aspect;     // width of wall in view
     const ratio = headline.draw(tall);                  // two lines on a tall screen, one otherwise
-    const width = tall ? Math.min(seen * 0.8, 12.5) : Math.min(seen * 0.4, 13.2);   // small enough to clear the duct above and the tower below
+    const width = tall ? Math.min(seen * 0.8, 12.5) : Math.min(seen * 0.5, 16.6);   // as large as fits between the duct above and the tower below
     headline.mesh.scale.set(width, width / ratio, 1);
     // Between the duct and the machine tops, on the camera's line of sight.
-    headline.mesh.position.set(v.x + (v.ax - v.x) * dist / v.z, tall ? 3.12 : 3.47, BACK_Z + 0.03);
+    headline.mesh.position.set(v.x + (v.ax - v.x) * dist / v.z, tall ? 3.12 : 3.52, BACK_Z + 0.03);
   }
   if (headline && document.fonts && document.fonts.load) {
     document.fonts.load('600 150px Montserrat').then(() => { placeHeadline(); kick(); }).catch(() => {});
+  }
+
+  /* ── THE SUPERVISOR'S ROUND ────────────────────────────────────────
+     She inspects the cartons running on the belt. At each open stretch of
+     conveyor she stands at the belt facing it, leans in, follows each carton
+     past with her eyes, then notes it on her tablet. Then she turns, walks
+     back to the aisle behind the machines, along it, and in to the next
+     stretch. She looks; she never touches the product. */
+  const STOPS = [-4.3, 1.6, 8.3, 1.6];           // the open stretches of belt, in the order she visits them
+  const LOOK = 9, MOVE = 10;                      // seconds at a stop, seconds walking to the next
+  const STAND_Z = -0.92, AISLE_Z = -4.2;          // at the belt; in the aisle, behind the yellow line
+  // Where she is `m` of the way (0 to 1) through a walk from one stop to the next: back, along, forward.
+  const walkPath = (m, from, to) => [
+    lerp(from, to, io(seg(m, 0.35, 0.65))),
+    lerp(STAND_Z, AISLE_Z, io(seg(m, 0.1, 0.4)) - io(seg(m, 0.6, 0.9))),
+  ];
+  function inspect(time) {
+    const leg = LOOK + MOVE, t = time % (leg * STOPS.length), i = Math.floor(t / leg), u = t - i * leg;
+    const from = STOPS[i], to = STOPS[(i + 1) % STOPS.length];
+    let x = from, z = STAND_Z, face = 0, stride = 0, lean = 0, headDown = 0.1, headTurn = 0, tap = 0;
+
+    if (u < LOOK) {
+      // At the belt. Lean in, and follow each carton from the left to the right as it passes.
+      const settle = io(seg(u, 0, 0.9)) - io(seg(u, LOOK - 0.9, LOOK));
+      const pass = (time % PERIOD) / PERIOD;
+      const follow = pass < 0.8 ? lerp(-0.62, 0.62, pass / 0.8) : lerp(0.62, -0.62, io((pass - 0.8) / 0.2));
+      const noting = io(seg(u, LOOK - 3.4, LOOK - 2.8)) - io(seg(u, LOOK - 1.2, LOOK - 0.7));   // the last look is at her tablet
+      lean = 0.24 * settle * (1 - 0.6 * noting);
+      headDown = lerp(0.1, lerp(0.58, 0.42, noting), settle);
+      headTurn = follow * settle * (1 - noting);
+      tap = noting;
+    } else {
+      const m = (u - LOOK) / MOVE, e = 0.004;
+      const here = walkPath(m, from, to), before = walkPath(m - e, from, to), after = walkPath(m + e, from, to);
+      x = here[0]; z = here[1];
+      // Turn on the spot first, towards the way she is going; after that she faces the way she walks.
+      face = m < 0.1 ? (to < from ? -1 : 1) * Math.PI * io(m / 0.1) : Math.atan2(after[0] - before[0], after[1] - before[1]);
+      const walked = (AISLE_Z - STAND_Z) * -1 * (io(seg(m, 0.1, 0.4)) + io(seg(m, 0.6, 0.9))) + Math.abs(to - from) * io(seg(m, 0.35, 0.65));
+      stride = 0.5 * clamp01(8 * Math.min(m - 0.1, 0.9 - m)) * Math.sin(walked * 3.4);
+    }
+
+    operator.root.position.set(x, 0, z);
+    operator.root.rotation.y = face;
+    operator.legs[0].rotation.x = stride;
+    operator.legs[1].rotation.x = -stride;
+    operator.upper.rotation.x = 0.03 + lean + 0.012 * Math.sin(time * 1.7);
+    operator.head.rotation.x = headDown;
+    operator.head.rotation.y = headTurn;
+    operator.right.elbow.rotation.x = -1.2 + 0.1 * Math.max(0, Math.sin(time * 5)) * tap;
   }
 
   /* ── FRAME ───────────────────────────────────────────────────────── */
@@ -667,18 +716,7 @@
       operator.head.rotation.y = lerp(0, 0.75, io(seg(look, 0.55, 0.85)));
       operator.right.elbow.rotation.x = -1.2 + 0.1 * Math.max(0, Math.sin(time * 5)) * (look < 0.5 ? 1 : 0);
       operator.pony.rotation.x = 0.16 + 0.05 * Math.sin(time * 1.3);
-      if (FIXED) {
-        // She walks the length of the line behind the machines, pausing at each end to check her tablet.
-        const lap = (time * 0.028) % 1;
-        const x = lerp(-8.2, 9.2, io(seg(lap, 0.04, 0.46)) - io(seg(lap, 0.54, 0.96)));
-        const going = Math.sin(Math.PI * seg(lap, 0.04, 0.46)) - Math.sin(Math.PI * seg(lap, 0.54, 0.96));   // +1 out, −1 back, 0 standing
-        const pace = Math.min(1, Math.abs(going) * 2.2);
-        operator.root.position.set(x, 0, -2.5);
-        operator.root.rotation.y = lerp(0.25, (going < 0 ? -1 : 1) * 1.35, pace);
-        const stride = 0.5 * pace * Math.sin(x * 3.4);
-        operator.legs[0].rotation.x = stride;
-        operator.legs[1].rotation.x = -stride;
-      }
+      if (FIXED) inspect(time);
     }
 
     // Camera: still when the headline is lettered on the wall; otherwise a slow pan along the line.
